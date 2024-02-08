@@ -1,0 +1,22 @@
+{
+    "env": {
+        "commonIncludePath": [
+            "${env:GBDK_HOME}/include",
+            "${workspaceFolder}/include"
+        ]
+      },
+    "configurations": [
+        {
+            "name": "GB",
+            "defines": [
+                "__TARGET_gb",
+                "__PORT_sm83"
+            ], 
+            "includePath": [
+                "${workspaceFolder}/include"
+            ]
+        }
+    ],
+    "version": 4,
+    "enableConfigurationSquiggles": true
+}

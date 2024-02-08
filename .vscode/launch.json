@@ -1,0 +1,10 @@
+{
+    "type": "emulicious-debugger",
+    "request": "launch",
+    "name": "GBC",
+    "program": "${workspaceFolder}/build/gbc/project.gbc", 
+    "additionalSrcFolders": "${workspaceFolder}/obj/gbc;${workspaceFolder}/src",
+    "port": 58870,
+    "stopOnEntry": false,
+    "preLaunchTask": "MakeGBC"
+}
