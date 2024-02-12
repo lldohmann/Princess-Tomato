@@ -68,13 +68,17 @@ void init_gfx() {
     SHOW_SPRITES;
 }
 
+enum player_state {idle, left, right, up, down};
+
 void main(void)
 {
-    uint8_t local_x = 4;
+    // PLAYER VARIABLES
+    uint8_t local_x = 4; // LOCAL LOCATION ON MAP
     uint8_t local_y = 4;
-    uint8_t sprite_x = 80;
+    uint8_t sprite_x = 80; // SPRITE LOCATION ON SCREEN
     uint8_t sprite_y = 88;
-    uint8_t goal_x, goal_y;
+    uint8_t goal_x, goal_y; // TARGET LOCATION ON SCREEN
+    enum player_state state = idle;
 	init_gfx();
     volatile uint8_t timer = 0;
     move_metasprite(player_metasprites[0], 0, 0, 80, 88);
@@ -83,46 +87,62 @@ void main(void)
     while(1) {
         joy = joypad();
         timer++;
-
-		// Game main loop processing goes here
-        if (joy & J_UP)
+        if (state == idle)
         {
-            if (check_map(local_x, local_y - 1) == '0')
+            // Game main loop processing goes here
+            if (joy & J_UP)
             {
-                local_y -= 1;
-                sprite_y -= 16;
-                move_metasprite(player_metasprites[0], 0, 0, sprite_x, sprite_y);
-                performantdelay(30);
+                if (check_map(local_x, local_y - 1) == '0')
+                {
+                    local_y -= 1;
+                    sprite_y -= 16;
+                    move_metasprite(player_metasprites[0], 0, 0, sprite_x, sprite_y);
+                    performantdelay(30);
+                }
+            }
+            else if (joy & J_DOWN)
+            {
+                if (check_map(local_x, local_y + 1) == '0')
+                {
+                    local_y += 1;
+                    sprite_y += 16;
+                    move_metasprite(player_metasprites[0], 0, 0, sprite_x, sprite_y);
+                    performantdelay(30);
+                }
+            }
+            else if (joy & J_LEFT)
+            {
+                if (check_map(local_x - 1, local_y) == '0')
+                {
+                    local_x -= 1;
+                    sprite_x -= 16;
+                    move_metasprite(player_metasprites[0], 0, 0, sprite_x, sprite_y);
+                    performantdelay(30);
+                }
+            }
+            else if (joy  & J_RIGHT)
+            {
+                if (check_map(local_x + 1, local_y) == '0')
+                {
+                    local_x += 1;
+                    goal_x = sprite_x + 16;
+                    state = right;
+                    //move_metasprite(player_metasprites[0], 0, 0, sprite_x, sprite_y);
+                    //performantdelay(30);
+                }
             }
         }
-        if (joy & J_DOWN)
+        else if (state == right)
         {
-            if (check_map(local_x, local_y + 1) == '0')
+            if (sprite_x < goal_x)
             {
-                local_y += 1;
-                sprite_y += 16;
+                sprite_x++;
                 move_metasprite(player_metasprites[0], 0, 0, sprite_x, sprite_y);
-                performantdelay(30);
+                performantdelay(10);
             }
-        }
-        if (joy & J_LEFT)
-        {
-            if (check_map(local_x - 1, local_y) == '0')
+            else 
             {
-                local_x -= 1;
-                sprite_x -= 16;
-                move_metasprite(player_metasprites[0], 0, 0, sprite_x, sprite_y);
-                performantdelay(30);
-            }
-        }
-        if (joy  & J_RIGHT)
-        {
-            if (check_map(local_x + 1, local_y) == '0')
-            {
-                local_x += 1;
-                sprite_x += 16;
-                move_metasprite(player_metasprites[0], 0, 0, sprite_x, sprite_y);
-                performantdelay(30);
+                state = idle;
             }
         }
 		// Done processing, yield CPU and wait for start of next frame

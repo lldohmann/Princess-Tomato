@@ -339,29 +339,33 @@ _init_gfx::
 	ldh	(_LCDC_REG + 0), a
 ;src\main.c:69: }
 	ret
-;src\main.c:71: void main(void)
+;src\main.c:73: void main(void)
 ;	---------------------------------
 ; Function main
 ; ---------------------------------
 _main::
-	add	sp, #-6
-;src\main.c:73: uint8_t local_x = 4;
+	add	sp, #-7
+;src\main.c:76: uint8_t local_x = 4; // LOCAL LOCATION ON MAP
 	ldhl	sp,	#1
-;src\main.c:74: uint8_t local_y = 4;
-;src\main.c:75: uint8_t sprite_x = 80;
-	ld	a,#0x04
-	ld	(hl+),a
+;src\main.c:77: uint8_t local_y = 4;
+	ld	a, #0x04
 	ld	(hl+), a
-;src\main.c:76: uint8_t sprite_y = 88;
-	ld	a, #0x50
+	ld	(hl), #0x04
+;src\main.c:78: uint8_t sprite_x = 80; // SPRITE LOCATION ON SCREEN
+	ldhl	sp,	#6
+	ld	(hl), #0x50
+;src\main.c:79: uint8_t sprite_y = 88;
+	ldhl	sp,	#3
+;src\main.c:81: enum player_state state = idle;
+	ld	a, #0x58
 	ld	(hl+), a
-	ld	(hl), #0x58
-;src\main.c:78: init_gfx();
+	ld	(hl), #0x00
+;src\main.c:82: init_gfx();
 	call	_init_gfx
-;src\main.c:79: volatile uint8_t timer = 0;
+;src\main.c:83: volatile uint8_t timer = 0;
 	ldhl	sp,	#0
 	ld	(hl), #0x00
-;src\main.c:80: move_metasprite(player_metasprites[0], 0, 0, 80, 88);
+;src\main.c:84: move_metasprite(player_metasprites[0], 0, 0, 80, 88);
 	ld	hl, #_player_metasprites
 	ld	a, (hl+)
 	ld	c, a
@@ -382,25 +386,34 @@ _main::
 	inc	sp
 	call	___move_metasprite
 	add	sp, #3
-;src\main.c:83: while(1) {
-00118$:
-;src\main.c:84: joy = joypad();
+;src\main.c:87: while(1) {
+	ldhl	sp,	#5
+	ld	(hl), #0x00
+00129$:
+;src\main.c:88: joy = joypad();
 	call	_joypad
 	ld	(#_joy),a
-;src\main.c:85: timer++;
+;src\main.c:89: timer++;
 	ldhl	sp,	#0
 	inc	(hl)
 	ld	a, (hl)
-;src\main.c:88: if (joy & J_UP)
-	ld	a, (#_joy)
-	bit	2, a
-	jr	Z, 00104$
-;src\main.c:90: if (check_map(local_x, local_y - 1) == '0')
-	ldhl	sp,	#2
+;src\main.c:90: if (state == idle)
+	ldhl	sp,	#4
 	ld	a, (hl)
-	ldhl	sp,	#5
-	ld	(hl), a
+	or	a, a
+	jp	NZ, 00126$
+;src\main.c:93: if (joy & J_UP)
+	ld	a, (#_joy)
+;src\main.c:95: if (check_map(local_x, local_y - 1) == '0')
+	ldhl	sp,	#2
 	ld	c, (hl)
+;src\main.c:98: sprite_y -= 16;
+	inc	hl
+	ld	b, (hl)
+;src\main.c:93: if (joy & J_UP)
+	bit	2, a
+	jr	Z, 00118$
+;src\main.c:95: if (check_map(local_x, local_y - 1) == '0')
 	dec	c
 	push	bc
 	ld	e, c
@@ -409,17 +422,16 @@ _main::
 	call	_check_map
 	pop	bc
 	sub	a, #0x30
-	jr	NZ, 00104$
-;src\main.c:92: local_y -= 1;
+	jp	NZ,00127$
+;src\main.c:97: local_y -= 1;
 	ldhl	sp,	#2
-;src\main.c:93: sprite_y -= 16;
+;src\main.c:98: sprite_y -= 16;
 	ld	a, c
 	ld	(hl+), a
-	inc	hl
-	ld	a, (hl)
+	ld	a, b
 	add	a, #0xf0
 	ld	(hl), a
-;src\main.c:94: move_metasprite(player_metasprites[0], 0, 0, sprite_x, sprite_y);
+;src\main.c:99: move_metasprite(player_metasprites[0], 0, 0, sprite_x, sprite_y);
 	ld	hl, #_player_metasprites
 	ld	a, (hl+)
 	ld	c, a
@@ -433,45 +445,43 @@ _main::
 	ld	hl, #___current_base_tile
 	ld	(hl), #0x00
 ;C:/gbdk/include/gb/metasprites.h:142: return __move_metasprite(base_sprite, x, y);
-	ldhl	sp,	#4
-	ld	a, (hl-)
+	ldhl	sp,	#3
+	ld	a, (hl)
 	push	af
 	inc	sp
+	ldhl	sp,	#7
 	ld	h, (hl)
 	ld	l, #0x00
 	push	hl
 	call	___move_metasprite
 	add	sp, #3
-;src\main.c:95: performantdelay(30);
+;src\main.c:100: performantdelay(30);
 	ld	a, #0x1e
 	call	_performantdelay
-00104$:
-;src\main.c:98: if (joy & J_DOWN)
-	ld	a, (#_joy)
+	jp	00127$
+00118$:
+;src\main.c:103: else if (joy & J_DOWN)
 	bit	3, a
-	jr	Z, 00108$
-;src\main.c:100: if (check_map(local_x, local_y + 1) == '0')
-	ldhl	sp,	#2
-	ld	a, (hl-)
-	ld	c, a
+	jr	Z, 00115$
+;src\main.c:105: if (check_map(local_x, local_y + 1) == '0')
 	inc	c
 	push	bc
 	ld	e, c
+	ldhl	sp,	#3
 	ld	a, (hl)
 	call	_check_map
 	pop	bc
 	sub	a, #0x30
-	jr	NZ, 00108$
-;src\main.c:102: local_y += 1;
+	jp	NZ,00127$
+;src\main.c:107: local_y += 1;
 	ldhl	sp,	#2
-;src\main.c:103: sprite_y += 16;
+;src\main.c:108: sprite_y += 16;
 	ld	a, c
 	ld	(hl+), a
-	inc	hl
-	ld	a, (hl)
+	ld	a, b
 	add	a, #0x10
 	ld	(hl), a
-;src\main.c:104: move_metasprite(player_metasprites[0], 0, 0, sprite_x, sprite_y);
+;src\main.c:109: move_metasprite(player_metasprites[0], 0, 0, sprite_x, sprite_y);
 	ld	hl, #_player_metasprites
 	ld	a, (hl+)
 	ld	c, a
@@ -485,45 +495,49 @@ _main::
 	ld	hl, #___current_base_tile
 	ld	(hl), #0x00
 ;C:/gbdk/include/gb/metasprites.h:142: return __move_metasprite(base_sprite, x, y);
-	ldhl	sp,	#4
-	ld	a, (hl-)
+	ldhl	sp,	#3
+	ld	a, (hl)
 	push	af
 	inc	sp
+	ldhl	sp,	#7
 	ld	h, (hl)
 	ld	l, #0x00
 	push	hl
 	call	___move_metasprite
 	add	sp, #3
-;src\main.c:105: performantdelay(30);
+;src\main.c:110: performantdelay(30);
 	ld	a, #0x1e
 	call	_performantdelay
-00108$:
-;src\main.c:108: if (joy & J_LEFT)
-	ld	a, (#_joy)
+	jp	00127$
+00115$:
+;src\main.c:115: if (check_map(local_x - 1, local_y) == '0')
+	ldhl	sp,	#1
+	ld	c, (hl)
+;src\main.c:118: sprite_x -= 16;
+	ldhl	sp,	#6
+	ld	b, (hl)
+;src\main.c:113: else if (joy & J_LEFT)
 	bit	1, a
 	jr	Z, 00112$
-;src\main.c:110: if (check_map(local_x - 1, local_y) == '0')
-	ldhl	sp,	#1
-	ld	a, (hl+)
-	ld	c, a
+;src\main.c:115: if (check_map(local_x - 1, local_y) == '0')
 	dec	c
 	push	bc
+	ldhl	sp,	#4
 	ld	e, (hl)
 	ld	a, c
 	call	_check_map
 	pop	bc
 	sub	a, #0x30
-	jr	NZ, 00112$
-;src\main.c:112: local_x -= 1;
+	jp	NZ,00127$
+;src\main.c:117: local_x -= 1;
 	ldhl	sp,	#1
-;src\main.c:113: sprite_x -= 16;
-	ld	a, c
-	ld	(hl+), a
-	inc	hl
-	ld	a, (hl)
+	ld	(hl), c
+;src\main.c:118: sprite_x -= 16;
+	ld	a, b
 	add	a, #0xf0
+	ldhl	sp,	#6
 	ld	(hl), a
-;src\main.c:114: move_metasprite(player_metasprites[0], 0, 0, sprite_x, sprite_y);
+;src\main.c:119: move_metasprite(player_metasprites[0], 0, 0, sprite_x, sprite_y);
 	ld	hl, #_player_metasprites
 	ld	a, (hl+)
 	ld	c, a
@@ -537,50 +551,64 @@ _main::
 	ld	hl, #___current_base_tile
 	ld	(hl), #0x00
 ;C:/gbdk/include/gb/metasprites.h:142: return __move_metasprite(base_sprite, x, y);
-	ldhl	sp,	#4
-	ld	a, (hl-)
+	ldhl	sp,	#3
+	ld	a, (hl)
 	push	af
 	inc	sp
+	ldhl	sp,	#7
 	ld	h, (hl)
 	ld	l, #0x00
 	push	hl
 	call	___move_metasprite
 	add	sp, #3
-;src\main.c:115: performantdelay(30);
+;src\main.c:120: performantdelay(30);
 	ld	a, #0x1e
 	call	_performantdelay
+	jr	00127$
 00112$:
-;src\main.c:118: if (joy  & J_RIGHT)
-	ld	a, (#_joy)
+;src\main.c:123: else if (joy  & J_RIGHT)
 	rrca
-	jr	NC, 00116$
-;src\main.c:120: if (check_map(local_x + 1, local_y) == '0')
-	ldhl	sp,	#1
-	ld	a, (hl+)
-	ld	c, a
+	jr	NC, 00127$
+;src\main.c:125: if (check_map(local_x + 1, local_y) == '0')
 	inc	c
 	push	bc
+	ldhl	sp,	#4
 	ld	e, (hl)
 	ld	a, c
 	call	_check_map
 	pop	bc
 	sub	a, #0x30
-	jr	NZ, 00116$
-;src\main.c:122: local_x += 1;
+	jr	NZ, 00127$
+;src\main.c:127: local_x += 1;
 	ldhl	sp,	#1
-;src\main.c:123: sprite_x += 16;
-	ld	a, c
-	ld	(hl+), a
-	inc	hl
-	ld	a, (hl)
+	ld	(hl), c
+;src\main.c:128: goal_x = sprite_x + 16;
+	ld	a, b
 	add	a, #0x10
-	ld	(hl), a
-;src\main.c:124: move_metasprite(player_metasprites[0], 0, 0, sprite_x, sprite_y);
+	ldhl	sp,	#5
+;src\main.c:129: state = right;
+	ld	(hl-), a
+	ld	(hl), #0x02
+	jr	00127$
+00126$:
+;src\main.c:135: else if (state == right)
+	ldhl	sp,	#4
+	ld	a, (hl)
+	sub	a, #0x02
+	jr	NZ, 00127$
+;src\main.c:137: if (sprite_x < goal_x)
+	ldhl	sp,	#6
+	ld	a, (hl-)
+	sub	a, (hl)
+	jr	NC, 00121$
+;src\main.c:139: sprite_x++;
+	inc	hl
+	inc	(hl)
+;src\main.c:140: move_metasprite(player_metasprites[0], 0, 0, sprite_x, sprite_y);
 	ld	hl, #_player_metasprites
 	ld	a, (hl+)
 	ld	c, a
 	ld	a, (hl)
-;C:/gbdk/include/gb/metasprites.h:140: __current_metasprite = metasprite;
 	ld	hl, #___current_metasprite
 	ld	(hl), c
 	inc	hl
@@ -589,24 +617,30 @@ _main::
 	ld	hl, #___current_base_tile
 	ld	(hl), #0x00
 ;C:/gbdk/include/gb/metasprites.h:142: return __move_metasprite(base_sprite, x, y);
-	ldhl	sp,	#4
-	ld	a, (hl-)
+	ldhl	sp,	#3
+	ld	a, (hl)
 	push	af
 	inc	sp
+	ldhl	sp,	#7
 	ld	h, (hl)
 	ld	l, #0x00
 	push	hl
 	call	___move_metasprite
 	add	sp, #3
-;src\main.c:125: performantdelay(30);
-	ld	a, #0x1e
+;src\main.c:141: performantdelay(10);
+	ld	a, #0x0a
 	call	_performantdelay
-00116$:
-;src\main.c:129: wait_vbl_done();
+	jr	00127$
+00121$:
+;src\main.c:145: state = idle;
+	ldhl	sp,	#4
+	ld	(hl), #0x00
+00127$:
+;src\main.c:149: wait_vbl_done();
 	call	_wait_vbl_done
-	jp	00118$
-;src\main.c:131: }
-	add	sp, #6
+	jp	00129$
+;src\main.c:151: }
+	add	sp, #7
 	ret
 	.area _CODE
 	.area _INITIALIZER

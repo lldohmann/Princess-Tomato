@@ -1,3 +1,11 @@
 {
-    "C_Cpp.errorSquiggles": "disabled"
+    //"C_Cpp.default.compilerPath": "c:\\gbdk\\bin\\lcc.exe",
+    "makefile.launchConfigurations": [
+        {
+            "cwd": "c:\\gbdk\\examples\\gb\\Princess Tomato\\obj",
+            "binaryPath": "c:\\gbdk\\examples\\gb\\Princess Tomato\\obj\\PrincessTomato.gb",
+            "binaryArgs": []
+        }
+    ],
+    "C_Cpp.default.compilerPath": "c:\\gbdk\\bin\\lcc.exe",
 }
