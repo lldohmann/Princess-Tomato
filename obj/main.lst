@@ -344,7 +344,7 @@
                                     344 ; Function main
                                     345 ; ---------------------------------
       000122                        346 _main::
-      000122 E8 F9            [16]  347 	add	sp, #-7
+      000122 E8 F8            [16]  347 	add	sp, #-8
                                     348 ;src\main.c:76: uint8_t local_x = 4; // LOCAL LOCATION ON MAP
       000124 F8 01            [12]  349 	ldhl	sp,	#1
                                     350 ;src\main.c:77: uint8_t local_y = 4;
@@ -353,12 +353,12 @@
       000129 36 04            [12]  353 	ld	(hl), #0x04
                                     354 ;src\main.c:78: uint8_t sprite_x = 80; // SPRITE LOCATION ON SCREEN
       00012B F8 06            [12]  355 	ldhl	sp,	#6
-      00012D 36 50            [12]  356 	ld	(hl), #0x50
-                                    357 ;src\main.c:79: uint8_t sprite_y = 88;
-      00012F F8 03            [12]  358 	ldhl	sp,	#3
-                                    359 ;src\main.c:81: enum player_state state = idle;
-      000131 3E 58            [ 8]  360 	ld	a, #0x58
-      000133 22               [ 8]  361 	ld	(hl+), a
+                                    356 ;src\main.c:79: uint8_t sprite_y = 88;
+      00012D 3E 50            [ 8]  357 	ld	a, #0x50
+      00012F 22               [ 8]  358 	ld	(hl+), a
+      000130 36 58            [12]  359 	ld	(hl), #0x58
+                                    360 ;src\main.c:81: enum player_state state = idle;
+      000132 F8 03            [12]  361 	ldhl	sp,	#3
       000134 36 00            [12]  362 	ld	(hl), #0x00
                                     363 ;src\main.c:82: init_gfx();
       000136 CDrEBr00         [24]  364 	call	_init_gfx
@@ -387,261 +387,347 @@
       000155 CDr00r00         [24]  387 	call	___move_metasprite
       000158 E8 03            [16]  388 	add	sp, #3
                                     389 ;src\main.c:87: while(1) {
-      00015A F8 05            [12]  390 	ldhl	sp,	#5
+      00015A F8 04            [12]  390 	ldhl	sp,	#4
       00015C 36 00            [12]  391 	ld	(hl), #0x00
-      00015E                        392 00129$:
-                                    393 ;src\main.c:88: joy = joypad();
-      00015E CDr00r00         [24]  394 	call	_joypad
-      000161 EAr00r00         [16]  395 	ld	(#_joy),a
-                                    396 ;src\main.c:89: timer++;
-      000164 F8 00            [12]  397 	ldhl	sp,	#0
-      000166 34               [12]  398 	inc	(hl)
-      000167 7E               [ 8]  399 	ld	a, (hl)
-                                    400 ;src\main.c:90: if (state == idle)
-      000168 F8 04            [12]  401 	ldhl	sp,	#4
-      00016A 7E               [ 8]  402 	ld	a, (hl)
-      00016B B7               [ 4]  403 	or	a, a
-      00016C C2r67r02         [16]  404 	jp	NZ, 00126$
-                                    405 ;src\main.c:93: if (joy & J_UP)
-      00016F FAr00r00         [16]  406 	ld	a, (#_joy)
-                                    407 ;src\main.c:95: if (check_map(local_x, local_y - 1) == '0')
-      000172 F8 02            [12]  408 	ldhl	sp,	#2
-      000174 4E               [ 8]  409 	ld	c, (hl)
-                                    410 ;src\main.c:98: sprite_y -= 16;
-      000175 23               [ 8]  411 	inc	hl
-      000176 46               [ 8]  412 	ld	b, (hl)
-                                    413 ;src\main.c:93: if (joy & J_UP)
-      000177 CB 57            [ 8]  414 	bit	2, a
-      000179 28 40            [12]  415 	jr	Z, 00118$
-                                    416 ;src\main.c:95: if (check_map(local_x, local_y - 1) == '0')
-      00017B 0D               [ 4]  417 	dec	c
-      00017C C5               [16]  418 	push	bc
-      00017D 59               [ 4]  419 	ld	e, c
-      00017E F8 03            [12]  420 	ldhl	sp,	#3
-      000180 7E               [ 8]  421 	ld	a, (hl)
-      000181 CDr0Cr00         [24]  422 	call	_check_map
-      000184 C1               [12]  423 	pop	bc
-      000185 D6 30            [ 8]  424 	sub	a, #0x30
-      000187 C2rA2r02         [16]  425 	jp	NZ,00127$
-                                    426 ;src\main.c:97: local_y -= 1;
-      00018A F8 02            [12]  427 	ldhl	sp,	#2
-                                    428 ;src\main.c:98: sprite_y -= 16;
-      00018C 79               [ 4]  429 	ld	a, c
-      00018D 22               [ 8]  430 	ld	(hl+), a
-      00018E 78               [ 4]  431 	ld	a, b
-      00018F C6 F0            [ 8]  432 	add	a, #0xf0
-      000191 77               [ 8]  433 	ld	(hl), a
-                                    434 ;src\main.c:99: move_metasprite(player_metasprites[0], 0, 0, sprite_x, sprite_y);
-      000192 21r34r00         [12]  435 	ld	hl, #_player_metasprites
-      000195 2A               [ 8]  436 	ld	a, (hl+)
-      000196 4F               [ 4]  437 	ld	c, a
-      000197 7E               [ 8]  438 	ld	a, (hl)
-                                    439 ;C:/gbdk/include/gb/metasprites.h:140: __current_metasprite = metasprite;
-      000198 21r00r00         [12]  440 	ld	hl, #___current_metasprite
-      00019B 71               [ 8]  441 	ld	(hl), c
-      00019C 23               [ 8]  442 	inc	hl
-      00019D 77               [ 8]  443 	ld	(hl), a
-                                    444 ;C:/gbdk/include/gb/metasprites.h:141: __current_base_tile = base_tile;
-      00019E 21r00r00         [12]  445 	ld	hl, #___current_base_tile
-      0001A1 36 00            [12]  446 	ld	(hl), #0x00
-                                    447 ;C:/gbdk/include/gb/metasprites.h:142: return __move_metasprite(base_sprite, x, y);
-      0001A3 F8 03            [12]  448 	ldhl	sp,	#3
-      0001A5 7E               [ 8]  449 	ld	a, (hl)
-      0001A6 F5               [16]  450 	push	af
-      0001A7 33               [ 8]  451 	inc	sp
-      0001A8 F8 07            [12]  452 	ldhl	sp,	#7
-      0001AA 66               [ 8]  453 	ld	h, (hl)
-      0001AB 2E 00            [ 8]  454 	ld	l, #0x00
-      0001AD E5               [16]  455 	push	hl
-      0001AE CDr00r00         [24]  456 	call	___move_metasprite
-      0001B1 E8 03            [16]  457 	add	sp, #3
-                                    458 ;src\main.c:100: performantdelay(30);
-      0001B3 3E 1E            [ 8]  459 	ld	a, #0x1e
-      0001B5 CDr00r00         [24]  460 	call	_performantdelay
-      0001B8 C3rA2r02         [16]  461 	jp	00127$
-      0001BB                        462 00118$:
-                                    463 ;src\main.c:103: else if (joy & J_DOWN)
-      0001BB CB 5F            [ 8]  464 	bit	3, a
-      0001BD 28 40            [12]  465 	jr	Z, 00115$
-                                    466 ;src\main.c:105: if (check_map(local_x, local_y + 1) == '0')
-      0001BF 0C               [ 4]  467 	inc	c
-      0001C0 C5               [16]  468 	push	bc
-      0001C1 59               [ 4]  469 	ld	e, c
-      0001C2 F8 03            [12]  470 	ldhl	sp,	#3
-      0001C4 7E               [ 8]  471 	ld	a, (hl)
-      0001C5 CDr0Cr00         [24]  472 	call	_check_map
-      0001C8 C1               [12]  473 	pop	bc
-      0001C9 D6 30            [ 8]  474 	sub	a, #0x30
-      0001CB C2rA2r02         [16]  475 	jp	NZ,00127$
-                                    476 ;src\main.c:107: local_y += 1;
-      0001CE F8 02            [12]  477 	ldhl	sp,	#2
-                                    478 ;src\main.c:108: sprite_y += 16;
-      0001D0 79               [ 4]  479 	ld	a, c
-      0001D1 22               [ 8]  480 	ld	(hl+), a
-      0001D2 78               [ 4]  481 	ld	a, b
-      0001D3 C6 10            [ 8]  482 	add	a, #0x10
-      0001D5 77               [ 8]  483 	ld	(hl), a
-                                    484 ;src\main.c:109: move_metasprite(player_metasprites[0], 0, 0, sprite_x, sprite_y);
-      0001D6 21r34r00         [12]  485 	ld	hl, #_player_metasprites
-      0001D9 2A               [ 8]  486 	ld	a, (hl+)
-      0001DA 4F               [ 4]  487 	ld	c, a
-      0001DB 7E               [ 8]  488 	ld	a, (hl)
-                                    489 ;C:/gbdk/include/gb/metasprites.h:140: __current_metasprite = metasprite;
-      0001DC 21r00r00         [12]  490 	ld	hl, #___current_metasprite
-      0001DF 71               [ 8]  491 	ld	(hl), c
-      0001E0 23               [ 8]  492 	inc	hl
-      0001E1 77               [ 8]  493 	ld	(hl), a
-                                    494 ;C:/gbdk/include/gb/metasprites.h:141: __current_base_tile = base_tile;
-      0001E2 21r00r00         [12]  495 	ld	hl, #___current_base_tile
-      0001E5 36 00            [12]  496 	ld	(hl), #0x00
-                                    497 ;C:/gbdk/include/gb/metasprites.h:142: return __move_metasprite(base_sprite, x, y);
-      0001E7 F8 03            [12]  498 	ldhl	sp,	#3
-      0001E9 7E               [ 8]  499 	ld	a, (hl)
-      0001EA F5               [16]  500 	push	af
-      0001EB 33               [ 8]  501 	inc	sp
-      0001EC F8 07            [12]  502 	ldhl	sp,	#7
-      0001EE 66               [ 8]  503 	ld	h, (hl)
-      0001EF 2E 00            [ 8]  504 	ld	l, #0x00
-      0001F1 E5               [16]  505 	push	hl
-      0001F2 CDr00r00         [24]  506 	call	___move_metasprite
-      0001F5 E8 03            [16]  507 	add	sp, #3
-                                    508 ;src\main.c:110: performantdelay(30);
-      0001F7 3E 1E            [ 8]  509 	ld	a, #0x1e
-      0001F9 CDr00r00         [24]  510 	call	_performantdelay
-      0001FC C3rA2r02         [16]  511 	jp	00127$
-      0001FF                        512 00115$:
-                                    513 ;src\main.c:115: if (check_map(local_x - 1, local_y) == '0')
-      0001FF F8 01            [12]  514 	ldhl	sp,	#1
-      000201 4E               [ 8]  515 	ld	c, (hl)
-                                    516 ;src\main.c:118: sprite_x -= 16;
-      000202 F8 06            [12]  517 	ldhl	sp,	#6
-      000204 46               [ 8]  518 	ld	b, (hl)
-                                    519 ;src\main.c:113: else if (joy & J_LEFT)
-      000205 CB 4F            [ 8]  520 	bit	1, a
-      000207 28 40            [12]  521 	jr	Z, 00112$
-                                    522 ;src\main.c:115: if (check_map(local_x - 1, local_y) == '0')
-      000209 0D               [ 4]  523 	dec	c
-      00020A C5               [16]  524 	push	bc
-      00020B F8 04            [12]  525 	ldhl	sp,	#4
-      00020D 5E               [ 8]  526 	ld	e, (hl)
-      00020E 79               [ 4]  527 	ld	a, c
-      00020F CDr0Cr00         [24]  528 	call	_check_map
-      000212 C1               [12]  529 	pop	bc
-      000213 D6 30            [ 8]  530 	sub	a, #0x30
-      000215 C2rA2r02         [16]  531 	jp	NZ,00127$
-                                    532 ;src\main.c:117: local_x -= 1;
-      000218 F8 01            [12]  533 	ldhl	sp,	#1
-      00021A 71               [ 8]  534 	ld	(hl), c
-                                    535 ;src\main.c:118: sprite_x -= 16;
-      00021B 78               [ 4]  536 	ld	a, b
-      00021C C6 F0            [ 8]  537 	add	a, #0xf0
-      00021E F8 06            [12]  538 	ldhl	sp,	#6
-      000220 77               [ 8]  539 	ld	(hl), a
-                                    540 ;src\main.c:119: move_metasprite(player_metasprites[0], 0, 0, sprite_x, sprite_y);
-      000221 21r34r00         [12]  541 	ld	hl, #_player_metasprites
-      000224 2A               [ 8]  542 	ld	a, (hl+)
-      000225 4F               [ 4]  543 	ld	c, a
-      000226 7E               [ 8]  544 	ld	a, (hl)
-                                    545 ;C:/gbdk/include/gb/metasprites.h:140: __current_metasprite = metasprite;
-      000227 21r00r00         [12]  546 	ld	hl, #___current_metasprite
-      00022A 71               [ 8]  547 	ld	(hl), c
-      00022B 23               [ 8]  548 	inc	hl
-      00022C 77               [ 8]  549 	ld	(hl), a
-                                    550 ;C:/gbdk/include/gb/metasprites.h:141: __current_base_tile = base_tile;
-      00022D 21r00r00         [12]  551 	ld	hl, #___current_base_tile
-      000230 36 00            [12]  552 	ld	(hl), #0x00
-                                    553 ;C:/gbdk/include/gb/metasprites.h:142: return __move_metasprite(base_sprite, x, y);
-      000232 F8 03            [12]  554 	ldhl	sp,	#3
-      000234 7E               [ 8]  555 	ld	a, (hl)
-      000235 F5               [16]  556 	push	af
-      000236 33               [ 8]  557 	inc	sp
-      000237 F8 07            [12]  558 	ldhl	sp,	#7
-      000239 66               [ 8]  559 	ld	h, (hl)
-      00023A 2E 00            [ 8]  560 	ld	l, #0x00
-      00023C E5               [16]  561 	push	hl
-      00023D CDr00r00         [24]  562 	call	___move_metasprite
-      000240 E8 03            [16]  563 	add	sp, #3
-                                    564 ;src\main.c:120: performantdelay(30);
-      000242 3E 1E            [ 8]  565 	ld	a, #0x1e
-      000244 CDr00r00         [24]  566 	call	_performantdelay
-      000247 18 59            [12]  567 	jr	00127$
-      000249                        568 00112$:
-                                    569 ;src\main.c:123: else if (joy  & J_RIGHT)
-      000249 0F               [ 4]  570 	rrca
-      00024A 30 56            [12]  571 	jr	NC, 00127$
-                                    572 ;src\main.c:125: if (check_map(local_x + 1, local_y) == '0')
-      00024C 0C               [ 4]  573 	inc	c
-      00024D C5               [16]  574 	push	bc
-      00024E F8 04            [12]  575 	ldhl	sp,	#4
-      000250 5E               [ 8]  576 	ld	e, (hl)
-      000251 79               [ 4]  577 	ld	a, c
-      000252 CDr0Cr00         [24]  578 	call	_check_map
-      000255 C1               [12]  579 	pop	bc
-      000256 D6 30            [ 8]  580 	sub	a, #0x30
-      000258 20 48            [12]  581 	jr	NZ, 00127$
-                                    582 ;src\main.c:127: local_x += 1;
-      00025A F8 01            [12]  583 	ldhl	sp,	#1
-      00025C 71               [ 8]  584 	ld	(hl), c
-                                    585 ;src\main.c:128: goal_x = sprite_x + 16;
-      00025D 78               [ 4]  586 	ld	a, b
-      00025E C6 10            [ 8]  587 	add	a, #0x10
-      000260 F8 05            [12]  588 	ldhl	sp,	#5
-                                    589 ;src\main.c:129: state = right;
-      000262 32               [ 8]  590 	ld	(hl-), a
-      000263 36 02            [12]  591 	ld	(hl), #0x02
-      000265 18 3B            [12]  592 	jr	00127$
-      000267                        593 00126$:
-                                    594 ;src\main.c:135: else if (state == right)
-      000267 F8 04            [12]  595 	ldhl	sp,	#4
-      000269 7E               [ 8]  596 	ld	a, (hl)
-      00026A D6 02            [ 8]  597 	sub	a, #0x02
-      00026C 20 34            [12]  598 	jr	NZ, 00127$
-                                    599 ;src\main.c:137: if (sprite_x < goal_x)
-      00026E F8 06            [12]  600 	ldhl	sp,	#6
-      000270 3A               [ 8]  601 	ld	a, (hl-)
-      000271 96               [ 8]  602 	sub	a, (hl)
-      000272 30 2A            [12]  603 	jr	NC, 00121$
-                                    604 ;src\main.c:139: sprite_x++;
-      000274 23               [ 8]  605 	inc	hl
-      000275 34               [12]  606 	inc	(hl)
-                                    607 ;src\main.c:140: move_metasprite(player_metasprites[0], 0, 0, sprite_x, sprite_y);
-      000276 21r34r00         [12]  608 	ld	hl, #_player_metasprites
-      000279 2A               [ 8]  609 	ld	a, (hl+)
-      00027A 4F               [ 4]  610 	ld	c, a
-      00027B 7E               [ 8]  611 	ld	a, (hl)
-      00027C 21r00r00         [12]  612 	ld	hl, #___current_metasprite
-      00027F 71               [ 8]  613 	ld	(hl), c
-      000280 23               [ 8]  614 	inc	hl
-      000281 77               [ 8]  615 	ld	(hl), a
-                                    616 ;C:/gbdk/include/gb/metasprites.h:141: __current_base_tile = base_tile;
-      000282 21r00r00         [12]  617 	ld	hl, #___current_base_tile
-      000285 36 00            [12]  618 	ld	(hl), #0x00
-                                    619 ;C:/gbdk/include/gb/metasprites.h:142: return __move_metasprite(base_sprite, x, y);
-      000287 F8 03            [12]  620 	ldhl	sp,	#3
-      000289 7E               [ 8]  621 	ld	a, (hl)
-      00028A F5               [16]  622 	push	af
-      00028B 33               [ 8]  623 	inc	sp
-      00028C F8 07            [12]  624 	ldhl	sp,	#7
-      00028E 66               [ 8]  625 	ld	h, (hl)
-      00028F 2E 00            [ 8]  626 	ld	l, #0x00
-      000291 E5               [16]  627 	push	hl
-      000292 CDr00r00         [24]  628 	call	___move_metasprite
-      000295 E8 03            [16]  629 	add	sp, #3
-                                    630 ;src\main.c:141: performantdelay(10);
-      000297 3E 0A            [ 8]  631 	ld	a, #0x0a
-      000299 CDr00r00         [24]  632 	call	_performantdelay
-      00029C 18 04            [12]  633 	jr	00127$
-      00029E                        634 00121$:
-                                    635 ;src\main.c:145: state = idle;
-      00029E F8 04            [12]  636 	ldhl	sp,	#4
-      0002A0 36 00            [12]  637 	ld	(hl), #0x00
-      0002A2                        638 00127$:
-                                    639 ;src\main.c:149: wait_vbl_done();
-      0002A2 CDr00r00         [24]  640 	call	_wait_vbl_done
-      0002A5 C3r5Er01         [16]  641 	jp	00129$
-                                    642 ;src\main.c:151: }
-      0002A8 E8 07            [16]  643 	add	sp, #7
-      0002AA C9               [16]  644 	ret
-                                    645 	.area _CODE
-                                    646 	.area _INITIALIZER
-                                    647 	.area _CABS (ABS)
+      00015E 23               [ 8]  392 	inc	hl
+      00015F 36 00            [12]  393 	ld	(hl), #0x00
+      000161                        394 00147$:
+                                    395 ;src\main.c:88: joy = joypad();
+      000161 CDr00r00         [24]  396 	call	_joypad
+      000164 EAr00r00         [16]  397 	ld	(#_joy),a
+                                    398 ;src\main.c:89: timer++;
+      000167 F8 00            [12]  399 	ldhl	sp,	#0
+      000169 34               [12]  400 	inc	(hl)
+      00016A 7E               [ 8]  401 	ld	a, (hl)
+                                    402 ;src\main.c:90: if (state == idle)
+      00016B F8 03            [12]  403 	ldhl	sp,	#3
+      00016D 7E               [ 8]  404 	ld	a, (hl)
+      00016E B7               [ 4]  405 	or	a, a
+      00016F C2r07r02         [16]  406 	jp	NZ, 00144$
+                                    407 ;src\main.c:93: if (joy & J_UP)
+      000172 FAr00r00         [16]  408 	ld	a, (#_joy)
+                                    409 ;src\main.c:95: if (check_map(local_x, local_y - 1) == '0')
+      000175 F8 02            [12]  410 	ldhl	sp,	#2
+      000177 46               [ 8]  411 	ld	b, (hl)
+                                    412 ;src\main.c:98: goal_y = sprite_y - 16;
+      000178 F8 07            [12]  413 	ldhl	sp,	#7
+      00017A 4E               [ 8]  414 	ld	c, (hl)
+                                    415 ;src\main.c:93: if (joy & J_UP)
+      00017B CB 57            [ 8]  416 	bit	2, a
+      00017D 28 1E            [12]  417 	jr	Z, 00118$
+                                    418 ;src\main.c:95: if (check_map(local_x, local_y - 1) == '0')
+      00017F 05               [ 4]  419 	dec	b
+      000180 C5               [16]  420 	push	bc
+      000181 58               [ 4]  421 	ld	e, b
+      000182 F8 03            [12]  422 	ldhl	sp,	#3
+      000184 7E               [ 8]  423 	ld	a, (hl)
+      000185 CDr0Cr00         [24]  424 	call	_check_map
+      000188 C1               [12]  425 	pop	bc
+      000189 D6 30            [ 8]  426 	sub	a, #0x30
+      00018B C2r0Er03         [16]  427 	jp	NZ,00145$
+                                    428 ;src\main.c:97: local_y -= 1;
+      00018E F8 02            [12]  429 	ldhl	sp,	#2
+      000190 70               [ 8]  430 	ld	(hl), b
+                                    431 ;src\main.c:98: goal_y = sprite_y - 16;
+      000191 79               [ 4]  432 	ld	a, c
+      000192 C6 F0            [ 8]  433 	add	a, #0xf0
+      000194 F8 05            [12]  434 	ldhl	sp,	#5
+                                    435 ;src\main.c:99: state = up;
+      000196 32               [ 8]  436 	ld	(hl-), a
+      000197 2B               [ 8]  437 	dec	hl
+      000198 36 03            [12]  438 	ld	(hl), #0x03
+      00019A C3r0Er03         [16]  439 	jp	00145$
+      00019D                        440 00118$:
+                                    441 ;src\main.c:104: else if (joy & J_DOWN)
+      00019D CB 5F            [ 8]  442 	bit	3, a
+      00019F 28 1E            [12]  443 	jr	Z, 00115$
+                                    444 ;src\main.c:106: if (check_map(local_x, local_y + 1) == '0')
+      0001A1 04               [ 4]  445 	inc	b
+      0001A2 C5               [16]  446 	push	bc
+      0001A3 58               [ 4]  447 	ld	e, b
+      0001A4 F8 03            [12]  448 	ldhl	sp,	#3
+      0001A6 7E               [ 8]  449 	ld	a, (hl)
+      0001A7 CDr0Cr00         [24]  450 	call	_check_map
+      0001AA C1               [12]  451 	pop	bc
+      0001AB D6 30            [ 8]  452 	sub	a, #0x30
+      0001AD C2r0Er03         [16]  453 	jp	NZ,00145$
+                                    454 ;src\main.c:108: local_y += 1;
+      0001B0 F8 02            [12]  455 	ldhl	sp,	#2
+      0001B2 70               [ 8]  456 	ld	(hl), b
+                                    457 ;src\main.c:109: goal_y = sprite_y + 16;
+      0001B3 79               [ 4]  458 	ld	a, c
+      0001B4 C6 10            [ 8]  459 	add	a, #0x10
+      0001B6 F8 05            [12]  460 	ldhl	sp,	#5
+                                    461 ;src\main.c:110: state = down;
+      0001B8 32               [ 8]  462 	ld	(hl-), a
+      0001B9 2B               [ 8]  463 	dec	hl
+      0001BA 36 04            [12]  464 	ld	(hl), #0x04
+      0001BC C3r0Er03         [16]  465 	jp	00145$
+      0001BF                        466 00115$:
+                                    467 ;src\main.c:117: if (check_map(local_x - 1, local_y) == '0')
+      0001BF F8 01            [12]  468 	ldhl	sp,	#1
+      0001C1 46               [ 8]  469 	ld	b, (hl)
+                                    470 ;src\main.c:120: goal_x = sprite_x - 16;
+      0001C2 F8 06            [12]  471 	ldhl	sp,	#6
+      0001C4 4E               [ 8]  472 	ld	c, (hl)
+                                    473 ;src\main.c:115: else if (joy & J_LEFT)
+      0001C5 CB 4F            [ 8]  474 	bit	1, a
+      0001C7 28 1D            [12]  475 	jr	Z, 00112$
+                                    476 ;src\main.c:117: if (check_map(local_x - 1, local_y) == '0')
+      0001C9 05               [ 4]  477 	dec	b
+      0001CA C5               [16]  478 	push	bc
+      0001CB F8 04            [12]  479 	ldhl	sp,	#4
+      0001CD 5E               [ 8]  480 	ld	e, (hl)
+      0001CE 78               [ 4]  481 	ld	a, b
+      0001CF CDr0Cr00         [24]  482 	call	_check_map
+      0001D2 C1               [12]  483 	pop	bc
+      0001D3 D6 30            [ 8]  484 	sub	a, #0x30
+      0001D5 C2r0Er03         [16]  485 	jp	NZ,00145$
+                                    486 ;src\main.c:119: local_x -= 1;
+      0001D8 F8 01            [12]  487 	ldhl	sp,	#1
+      0001DA 70               [ 8]  488 	ld	(hl), b
+                                    489 ;src\main.c:120: goal_x = sprite_x - 16;
+      0001DB 79               [ 4]  490 	ld	a, c
+      0001DC C6 F0            [ 8]  491 	add	a, #0xf0
+      0001DE F8 04            [12]  492 	ldhl	sp,	#4
+                                    493 ;src\main.c:121: state = left;
+      0001E0 32               [ 8]  494 	ld	(hl-), a
+      0001E1 36 01            [12]  495 	ld	(hl), #0x01
+      0001E3 C3r0Er03         [16]  496 	jp	00145$
+      0001E6                        497 00112$:
+                                    498 ;src\main.c:126: else if (joy  & J_RIGHT)
+      0001E6 0F               [ 4]  499 	rrca
+      0001E7 D2r0Er03         [16]  500 	jp	NC,00145$
+                                    501 ;src\main.c:128: if (check_map(local_x + 1, local_y) == '0')
+      0001EA 04               [ 4]  502 	inc	b
+      0001EB C5               [16]  503 	push	bc
+      0001EC F8 04            [12]  504 	ldhl	sp,	#4
+      0001EE 5E               [ 8]  505 	ld	e, (hl)
+      0001EF 78               [ 4]  506 	ld	a, b
+      0001F0 CDr0Cr00         [24]  507 	call	_check_map
+      0001F3 C1               [12]  508 	pop	bc
+      0001F4 D6 30            [ 8]  509 	sub	a, #0x30
+      0001F6 C2r0Er03         [16]  510 	jp	NZ,00145$
+                                    511 ;src\main.c:130: local_x += 1;
+      0001F9 F8 01            [12]  512 	ldhl	sp,	#1
+      0001FB 70               [ 8]  513 	ld	(hl), b
+                                    514 ;src\main.c:131: goal_x = sprite_x + 16;
+      0001FC 79               [ 4]  515 	ld	a, c
+      0001FD C6 10            [ 8]  516 	add	a, #0x10
+      0001FF F8 04            [12]  517 	ldhl	sp,	#4
+                                    518 ;src\main.c:132: state = right;
+      000201 32               [ 8]  519 	ld	(hl-), a
+      000202 36 02            [12]  520 	ld	(hl), #0x02
+      000204 C3r0Er03         [16]  521 	jp	00145$
+      000207                        522 00144$:
+                                    523 ;src\main.c:139: else if (state == right) // switch(state)
+      000207 F8 03            [12]  524 	ldhl	sp,	#3
+      000209 7E               [ 8]  525 	ld	a, (hl)
+      00020A D6 02            [ 8]  526 	sub	a, #0x02
+      00020C 20 38            [12]  527 	jr	NZ, 00141$
+                                    528 ;src\main.c:141: if (sprite_x < goal_x)
+      00020E F8 06            [12]  529 	ldhl	sp,	#6
+      000210 3A               [ 8]  530 	ld	a, (hl-)
+      000211 2B               [ 8]  531 	dec	hl
+      000212 96               [ 8]  532 	sub	a, (hl)
+      000213 30 2A            [12]  533 	jr	NC, 00121$
+                                    534 ;src\main.c:143: sprite_x++;
+      000215 23               [ 8]  535 	inc	hl
+      000216 23               [ 8]  536 	inc	hl
+      000217 34               [12]  537 	inc	(hl)
+                                    538 ;src\main.c:144: move_metasprite(player_metasprites[0], 0, 0, sprite_x, sprite_y);
+      000218 21r34r00         [12]  539 	ld	hl, #_player_metasprites
+      00021B 2A               [ 8]  540 	ld	a, (hl+)
+      00021C 4F               [ 4]  541 	ld	c, a
+      00021D 7E               [ 8]  542 	ld	a, (hl)
+                                    543 ;C:/gbdk/include/gb/metasprites.h:140: __current_metasprite = metasprite;
+      00021E 21r00r00         [12]  544 	ld	hl, #___current_metasprite
+      000221 71               [ 8]  545 	ld	(hl), c
+      000222 23               [ 8]  546 	inc	hl
+      000223 77               [ 8]  547 	ld	(hl), a
+                                    548 ;C:/gbdk/include/gb/metasprites.h:141: __current_base_tile = base_tile;
+      000224 21r00r00         [12]  549 	ld	hl, #___current_base_tile
+      000227 36 00            [12]  550 	ld	(hl), #0x00
+                                    551 ;C:/gbdk/include/gb/metasprites.h:142: return __move_metasprite(base_sprite, x, y);
+      000229 F8 07            [12]  552 	ldhl	sp,	#7
+      00022B 3A               [ 8]  553 	ld	a, (hl-)
+      00022C F5               [16]  554 	push	af
+      00022D 33               [ 8]  555 	inc	sp
+      00022E 66               [ 8]  556 	ld	h, (hl)
+      00022F 2E 00            [ 8]  557 	ld	l, #0x00
+      000231 E5               [16]  558 	push	hl
+      000232 CDr00r00         [24]  559 	call	___move_metasprite
+      000235 E8 03            [16]  560 	add	sp, #3
+                                    561 ;src\main.c:145: performantdelay(5); // speed variable magic number
+      000237 3E 05            [ 8]  562 	ld	a, #0x05
+      000239 CDr00r00         [24]  563 	call	_performantdelay
+      00023C C3r0Er03         [16]  564 	jp	00145$
+      00023F                        565 00121$:
+                                    566 ;src\main.c:149: state = idle;
+      00023F F8 03            [12]  567 	ldhl	sp,	#3
+      000241 36 00            [12]  568 	ld	(hl), #0x00
+      000243 C3r0Er03         [16]  569 	jp	00145$
+      000246                        570 00141$:
+                                    571 ;src\main.c:152: else if (state == left)
+      000246 F8 03            [12]  572 	ldhl	sp,	#3
+      000248 7E               [ 8]  573 	ld	a, (hl)
+      000249 3D               [ 4]  574 	dec	a
+      00024A 20 36            [12]  575 	jr	NZ, 00138$
+                                    576 ;src\main.c:154: if (sprite_x > goal_x)
+      00024C F8 04            [12]  577 	ldhl	sp,	#4
+      00024E 2A               [ 8]  578 	ld	a, (hl+)
+      00024F 23               [ 8]  579 	inc	hl
+      000250 96               [ 8]  580 	sub	a, (hl)
+      000251 30 28            [12]  581 	jr	NC, 00124$
+                                    582 ;src\main.c:156: sprite_x--;
+      000253 35               [12]  583 	dec	(hl)
+                                    584 ;src\main.c:157: move_metasprite(player_metasprites[0], 0, 0, sprite_x, sprite_y);
+      000254 21r34r00         [12]  585 	ld	hl, #_player_metasprites
+      000257 2A               [ 8]  586 	ld	a, (hl+)
+      000258 4F               [ 4]  587 	ld	c, a
+      000259 7E               [ 8]  588 	ld	a, (hl)
+                                    589 ;C:/gbdk/include/gb/metasprites.h:140: __current_metasprite = metasprite;
+      00025A 21r00r00         [12]  590 	ld	hl, #___current_metasprite
+      00025D 71               [ 8]  591 	ld	(hl), c
+      00025E 23               [ 8]  592 	inc	hl
+      00025F 77               [ 8]  593 	ld	(hl), a
+                                    594 ;C:/gbdk/include/gb/metasprites.h:141: __current_base_tile = base_tile;
+      000260 21r00r00         [12]  595 	ld	hl, #___current_base_tile
+      000263 36 00            [12]  596 	ld	(hl), #0x00
+                                    597 ;C:/gbdk/include/gb/metasprites.h:142: return __move_metasprite(base_sprite, x, y);
+      000265 F8 07            [12]  598 	ldhl	sp,	#7
+      000267 3A               [ 8]  599 	ld	a, (hl-)
+      000268 F5               [16]  600 	push	af
+      000269 33               [ 8]  601 	inc	sp
+      00026A 66               [ 8]  602 	ld	h, (hl)
+      00026B 2E 00            [ 8]  603 	ld	l, #0x00
+      00026D E5               [16]  604 	push	hl
+      00026E CDr00r00         [24]  605 	call	___move_metasprite
+      000271 E8 03            [16]  606 	add	sp, #3
+                                    607 ;src\main.c:158: performantdelay(5); // speed variable magic number
+      000273 3E 05            [ 8]  608 	ld	a, #0x05
+      000275 CDr00r00         [24]  609 	call	_performantdelay
+      000278 C3r0Er03         [16]  610 	jp	00145$
+      00027B                        611 00124$:
+                                    612 ;src\main.c:162: state = idle;
+      00027B F8 03            [12]  613 	ldhl	sp,	#3
+      00027D 36 00            [12]  614 	ld	(hl), #0x00
+      00027F C3r0Er03         [16]  615 	jp	00145$
+      000282                        616 00138$:
+                                    617 ;src\main.c:165: else if (state == down)
+      000282 F8 03            [12]  618 	ldhl	sp,	#3
+      000284 7E               [ 8]  619 	ld	a, (hl)
+      000285 D6 04            [ 8]  620 	sub	a, #0x04
+      000287 20 4C            [12]  621 	jr	NZ, 00135$
+                                    622 ;src\main.c:167: if(sprite_y < goal_y)
+      000289 F8 07            [12]  623 	ldhl	sp,	#7
+      00028B 3A               [ 8]  624 	ld	a, (hl-)
+      00028C 2B               [ 8]  625 	dec	hl
+      00028D 96               [ 8]  626 	sub	a, (hl)
+      00028E 30 3F            [12]  627 	jr	NC, 00127$
+                                    628 ;src\main.c:169: sprite_y++;
+      000290 23               [ 8]  629 	inc	hl
+      000291 23               [ 8]  630 	inc	hl
+      000292 34               [12]  631 	inc	(hl)
+                                    632 ;src\main.c:170: move_metasprite_hvflip(player_metasprites[0], 0, 0, sprite_x, sprite_y);
+      000293 21r34r00         [12]  633 	ld	hl, #_player_metasprites
+      000296 2A               [ 8]  634 	ld	a, (hl+)
+      000297 47               [ 4]  635 	ld	b, a
+      000298 7E               [ 8]  636 	ld	a, (hl)
+      000299 F8 07            [12]  637 	ldhl	sp,	#7
+      00029B 4E               [ 8]  638 	ld	c, (hl)
+      00029C 2B               [ 8]  639 	dec	hl
+      00029D 5E               [ 8]  640 	ld	e, (hl)
+                                    641 ;C:/gbdk/include/gb/metasprites.h:228: __current_metasprite = metasprite;
+      00029E 21r00r00         [12]  642 	ld	hl, #___current_metasprite
+      0002A1 70               [ 8]  643 	ld	(hl), b
+      0002A2 23               [ 8]  644 	inc	hl
+      0002A3 77               [ 8]  645 	ld	(hl), a
+                                    646 ;C:/gbdk/include/gb/metasprites.h:229: __current_base_tile = base_tile;
+      0002A4 21r00r00         [12]  647 	ld	hl, #___current_base_tile
+      0002A7 36 00            [12]  648 	ld	(hl), #0x00
+                                    649 ;C:/gbdk/include/gb/metasprites.h:230: return __move_metasprite_hvflip(base_sprite, x - 8, y - ((LCDC_REG & 0x04U) ? 16 : 8));
+      0002A9 F0r00            [12]  650 	ldh	a, (_LCDC_REG + 0)
+      0002AB CB 57            [ 8]  651 	bit	2, a
+      0002AD 28 05            [12]  652 	jr	Z, 00156$
+      0002AF 21 10 00         [12]  653 	ld	hl, #0x0010
+      0002B2 18 03            [12]  654 	jr	00157$
+      0002B4                        655 00156$:
+      0002B4 21 08 00         [12]  656 	ld	hl, #0x0008
+      0002B7                        657 00157$:
+      0002B7 79               [ 4]  658 	ld	a, c
+      0002B8 95               [ 4]  659 	sub	a, l
+      0002B9 47               [ 4]  660 	ld	b, a
+      0002BA 7B               [ 4]  661 	ld	a, e
+      0002BB C6 F8            [ 8]  662 	add	a, #0xf8
+      0002BD C5               [16]  663 	push	bc
+      0002BE 33               [ 8]  664 	inc	sp
+      0002BF 67               [ 4]  665 	ld	h, a
+      0002C0 2E 00            [ 8]  666 	ld	l, #0x00
+      0002C2 E5               [16]  667 	push	hl
+      0002C3 CDr00r00         [24]  668 	call	___move_metasprite_hvflip
+      0002C6 E8 03            [16]  669 	add	sp, #3
+                                    670 ;src\main.c:171: performantdelay(5);// speed variable magic number
+      0002C8 3E 05            [ 8]  671 	ld	a, #0x05
+      0002CA CDr00r00         [24]  672 	call	_performantdelay
+      0002CD 18 3F            [12]  673 	jr	00145$
+      0002CF                        674 00127$:
+                                    675 ;src\main.c:174: state = idle;
+      0002CF F8 03            [12]  676 	ldhl	sp,	#3
+      0002D1 36 00            [12]  677 	ld	(hl), #0x00
+      0002D3 18 39            [12]  678 	jr	00145$
+      0002D5                        679 00135$:
+                                    680 ;src\main.c:177: else if (state == up)
+      0002D5 F8 03            [12]  681 	ldhl	sp,	#3
+      0002D7 7E               [ 8]  682 	ld	a, (hl)
+      0002D8 D6 03            [ 8]  683 	sub	a, #0x03
+      0002DA 20 32            [12]  684 	jr	NZ, 00145$
+                                    685 ;src\main.c:179: if (sprite_y > goal_y)
+      0002DC F8 05            [12]  686 	ldhl	sp,	#5
+      0002DE 2A               [ 8]  687 	ld	a, (hl+)
+      0002DF 23               [ 8]  688 	inc	hl
+      0002E0 96               [ 8]  689 	sub	a, (hl)
+      0002E1 30 27            [12]  690 	jr	NC, 00130$
+                                    691 ;src\main.c:181: sprite_y--;
+      0002E3 35               [12]  692 	dec	(hl)
+                                    693 ;src\main.c:182: move_metasprite(player_metasprites[0], 0, 0, sprite_x, sprite_y);
+      0002E4 21r34r00         [12]  694 	ld	hl, #_player_metasprites
+      0002E7 2A               [ 8]  695 	ld	a, (hl+)
+      0002E8 4F               [ 4]  696 	ld	c, a
+      0002E9 7E               [ 8]  697 	ld	a, (hl)
+                                    698 ;C:/gbdk/include/gb/metasprites.h:140: __current_metasprite = metasprite;
+      0002EA 21r00r00         [12]  699 	ld	hl, #___current_metasprite
+      0002ED 71               [ 8]  700 	ld	(hl), c
+      0002EE 23               [ 8]  701 	inc	hl
+      0002EF 77               [ 8]  702 	ld	(hl), a
+                                    703 ;C:/gbdk/include/gb/metasprites.h:141: __current_base_tile = base_tile;
+      0002F0 21r00r00         [12]  704 	ld	hl, #___current_base_tile
+      0002F3 36 00            [12]  705 	ld	(hl), #0x00
+                                    706 ;C:/gbdk/include/gb/metasprites.h:142: return __move_metasprite(base_sprite, x, y);
+      0002F5 F8 07            [12]  707 	ldhl	sp,	#7
+      0002F7 3A               [ 8]  708 	ld	a, (hl-)
+      0002F8 F5               [16]  709 	push	af
+      0002F9 33               [ 8]  710 	inc	sp
+      0002FA 66               [ 8]  711 	ld	h, (hl)
+      0002FB 2E 00            [ 8]  712 	ld	l, #0x00
+      0002FD E5               [16]  713 	push	hl
+      0002FE CDr00r00         [24]  714 	call	___move_metasprite
+      000301 E8 03            [16]  715 	add	sp, #3
+                                    716 ;src\main.c:183: performantdelay(5); // speed variable magic number
+      000303 3E 05            [ 8]  717 	ld	a, #0x05
+      000305 CDr00r00         [24]  718 	call	_performantdelay
+      000308 18 04            [12]  719 	jr	00145$
+      00030A                        720 00130$:
+                                    721 ;src\main.c:186: state = idle;
+      00030A F8 03            [12]  722 	ldhl	sp,	#3
+      00030C 36 00            [12]  723 	ld	(hl), #0x00
+      00030E                        724 00145$:
+                                    725 ;src\main.c:190: wait_vbl_done();
+      00030E CDr00r00         [24]  726 	call	_wait_vbl_done
+      000311 C3r61r01         [16]  727 	jp	00147$
+                                    728 ;src\main.c:192: }
+      000314 E8 08            [16]  729 	add	sp, #8
+      000316 C9               [16]  730 	ret
+                                    731 	.area _CODE
+                                    732 	.area _INITIALIZER
+                                    733 	.area _CABS (ABS)

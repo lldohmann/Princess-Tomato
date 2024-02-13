@@ -14,6 +14,7 @@ Symbol Table
     ___current_base_tile                                           ****** GX
     ___current_metasprite                                          ****** GX
     ___move_metasprite                                             ****** GX
+    ___move_metasprite_hvflip                                      ****** GX
   0 ___str_0                                                       0000E5 R
   0 ___str_2                                                       0000E9 R
   0 _check_map                                                     00000C GR
@@ -33,13 +34,12 @@ Symbol Table
     _set_sprite_data                                               ****** GX
     _wait_vbl_done                                                 ****** GX
 
-
 ASxxxx Assembler V02.00 + NoICE + SDCC mods  (GameBoy)                  Page 2
 Hexadecimal [24-Bits]
 
 Area Table
 
-   0 _CODE                                      size    2AB   flags    0
+   0 _CODE                                      size    317   flags    0
    1 _DATA                                      size      1   flags    0
    2 _INITIALIZED                               size      0   flags    0
    3 _DABS                                      size      0   flags    8

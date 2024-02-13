@@ -78,6 +78,7 @@ void main(void)
     uint8_t sprite_x = 80; // SPRITE LOCATION ON SCREEN
     uint8_t sprite_y = 88;
     uint8_t goal_x, goal_y; // TARGET LOCATION ON SCREEN
+    uint8_t speed = 5;
     enum player_state state = idle;
 	init_gfx();
     volatile uint8_t timer = 0;
@@ -95,9 +96,10 @@ void main(void)
                 if (check_map(local_x, local_y - 1) == '0')
                 {
                     local_y -= 1;
-                    sprite_y -= 16;
-                    move_metasprite(player_metasprites[0], 0, 0, sprite_x, sprite_y);
-                    performantdelay(30);
+                    goal_y = sprite_y - 16;
+                    state = up;
+                    //move_metasprite(player_metasprites[0], 0, 0, sprite_x, sprite_y);
+                    //performantdelay(30);
                 }
             }
             else if (joy & J_DOWN)
@@ -105,9 +107,10 @@ void main(void)
                 if (check_map(local_x, local_y + 1) == '0')
                 {
                     local_y += 1;
-                    sprite_y += 16;
-                    move_metasprite(player_metasprites[0], 0, 0, sprite_x, sprite_y);
-                    performantdelay(30);
+                    goal_y = sprite_y + 16;
+                    state = down;
+                    //move_metasprite(player_metasprites[0], 0, 0, sprite_x, sprite_y);
+                    //performantdelay(30);
                 }
             }
             else if (joy & J_LEFT)
@@ -115,9 +118,10 @@ void main(void)
                 if (check_map(local_x - 1, local_y) == '0')
                 {
                     local_x -= 1;
-                    sprite_x -= 16;
-                    move_metasprite(player_metasprites[0], 0, 0, sprite_x, sprite_y);
-                    performantdelay(30);
+                    goal_x = sprite_x - 16;
+                    state = left;
+                    //move_metasprite(player_metasprites[0], 0, 0, sprite_x, sprite_y);
+                    //performantdelay(30);
                 }
             }
             else if (joy  & J_RIGHT)
@@ -132,16 +136,54 @@ void main(void)
                 }
             }
         }
-        else if (state == right)
-        {
+        // NOTE TO SELF, THIS MIGHT JUST BE TWO SWITCH STATEMENTS, BETTER OFF USING THE SWITCH KEYWORD & HAVE C CONVERT IT TO MACHINE CODE.
+        else if (state == right) // switch(state)
+        {                        //     case (state = right):
             if (sprite_x < goal_x)
             {
                 sprite_x++;
                 move_metasprite(player_metasprites[0], 0, 0, sprite_x, sprite_y);
-                performantdelay(10);
+                performantdelay(speed); // speed variable magic number
             }
             else 
             {
+                state = idle;
+            }
+        }
+        else if (state == left)
+        {
+            if (sprite_x > goal_x)
+            {
+                sprite_x--;
+                move_metasprite(player_metasprites[0], 0, 0, sprite_x, sprite_y);
+                performantdelay(speed); // speed variable magic number
+            }
+            else 
+            {
+                state = idle;
+            }
+        }
+        else if (state == down)
+        {
+            if(sprite_y < goal_y)
+            {
+                sprite_y++;
+                move_metasprite_hvflip(player_metasprites[0], 0, 0, sprite_x, sprite_y);
+                performantdelay(speed);// speed variable magic number
+            }
+            else {
+                state = idle;
+            }
+        }
+        else if (state == up)
+        {
+            if (sprite_y > goal_y)
+            {
+                sprite_y--;
+                move_metasprite(player_metasprites[0], 0, 0, sprite_x, sprite_y);
+                performantdelay(speed); // speed variable magic number
+            }
+            else {
                 state = idle;
             }
         }
