@@ -22,712 +22,1073 @@
                                      22 	.globl _joypad
                                      23 	.globl _joy
                                      24 	.globl _map_collision
-                                     25 	.globl _player_metasprites
-                                     26 	.globl _player_down
+                                     25 ;--------------------------------------------------------
+                                     26 ; special function registers
                                      27 ;--------------------------------------------------------
-                                     28 ; special function registers
-                                     29 ;--------------------------------------------------------
+                                     28 ;--------------------------------------------------------
+                                     29 ; ram data
                                      30 ;--------------------------------------------------------
-                                     31 ; ram data
-                                     32 ;--------------------------------------------------------
-                                     33 	.area _DATA
-      000000                         34 _joy::
-      000000                         35 	.ds 1
+                                     31 	.area _DATA
+      000000                         32 _joy::
+      000000                         33 	.ds 1
+                                     34 ;--------------------------------------------------------
+                                     35 ; ram data
                                      36 ;--------------------------------------------------------
-                                     37 ; ram data
+                                     37 	.area _INITIALIZED
                                      38 ;--------------------------------------------------------
-                                     39 	.area _INITIALIZED
+                                     39 ; absolute external ram data
                                      40 ;--------------------------------------------------------
-                                     41 ; absolute external ram data
+                                     41 	.area _DABS (ABS)
                                      42 ;--------------------------------------------------------
-                                     43 	.area _DABS (ABS)
+                                     43 ; global & static initialisations
                                      44 ;--------------------------------------------------------
-                                     45 ; global & static initialisations
-                                     46 ;--------------------------------------------------------
-                                     47 	.area _HOME
+                                     45 	.area _HOME
+                                     46 	.area _GSINIT
+                                     47 	.area _GSFINAL
                                      48 	.area _GSINIT
-                                     49 	.area _GSFINAL
-                                     50 	.area _GSINIT
+                                     49 ;--------------------------------------------------------
+                                     50 ; Home
                                      51 ;--------------------------------------------------------
-                                     52 ; Home
-                                     53 ;--------------------------------------------------------
-                                     54 	.area _HOME
-                                     55 	.area _HOME
+                                     52 	.area _HOME
+                                     53 	.area _HOME
+                                     54 ;--------------------------------------------------------
+                                     55 ; code
                                      56 ;--------------------------------------------------------
-                                     57 ; code
-                                     58 ;--------------------------------------------------------
-                                     59 	.area _CODE
-                                     60 ;src\main.c:9: void performantdelay(uint8_t numloops)
-                                     61 ;	---------------------------------
-                                     62 ; Function performantdelay
-                                     63 ; ---------------------------------
-      000000                         64 _performantdelay::
-      000000 4F               [ 4]   65 	ld	c, a
-                                     66 ;src\main.c:12: for (ii = 0; ii < numloops; ii++)
-      000001 06 00            [ 8]   67 	ld	b, #0x00
-      000003                         68 00103$:
-      000003 78               [ 4]   69 	ld	a, b
-      000004 91               [ 4]   70 	sub	a, c
-      000005 D0               [20]   71 	ret	NC
-                                     72 ;src\main.c:14: wait_vbl_done();
-      000006 CDr00r00         [24]   73 	call	_wait_vbl_done
-                                     74 ;src\main.c:12: for (ii = 0; ii < numloops; ii++)
-      000009 04               [ 4]   75 	inc	b
-                                     76 ;src\main.c:16: }
-      00000A 18 F7            [12]   77 	jr	00103$
-                                     78 ;src\main.c:42: char check_map(uint8_t x_pos, uint8_t y_pos)
-                                     79 ;	---------------------------------
-                                     80 ; Function check_map
-                                     81 ; ---------------------------------
-      00000C                         82 _check_map::
-      00000C 4F               [ 4]   83 	ld	c, a
-                                     84 ;src\main.c:44: return map_collision[y_pos][x_pos];
-      00000D 16 00            [ 8]   85 	ld	d, #0x00
-      00000F 6B               [ 4]   86 	ld	l, e
-      000010 62               [ 4]   87 	ld	h, d
-      000011 29               [ 8]   88 	add	hl, hl
-      000012 29               [ 8]   89 	add	hl, hl
-      000013 19               [ 8]   90 	add	hl, de
-      000014 29               [ 8]   91 	add	hl, hl
-      000015 19               [ 8]   92 	add	hl, de
-      000016 11r36r00         [12]   93 	ld	de, #_map_collision
-      000019 19               [ 8]   94 	add	hl, de
-      00001A 59               [ 4]   95 	ld	e, c
-      00001B 16 00            [ 8]   96 	ld	d, #0x00
-      00001D 19               [ 8]   97 	add	hl, de
-      00001E 7E               [ 8]   98 	ld	a, (hl)
-                                     99 ;src\main.c:45: }
-      00001F C9               [16]  100 	ret
-      000020                        101 _player_down:
-      000020 F8                     102 	.db #0xf8	; -8
-      000021 F8                     103 	.db #0xf8	; -8
-      000022 00                     104 	.db #0x00	; 0
-      000023 00                     105 	.db #0x00	; 0
-      000024 00                     106 	.db #0x00	;  0
-      000025 08                     107 	.db #0x08	;  8
-      000026 02                     108 	.db #0x02	; 2
-      000027 00                     109 	.db #0x00	; 0
-      000028 08                     110 	.db #0x08	;  8
-      000029 F8                     111 	.db #0xf8	; -8
-      00002A 01                     112 	.db #0x01	; 1
-      00002B 00                     113 	.db #0x00	; 0
-      00002C 00                     114 	.db #0x00	;  0
-      00002D 08                     115 	.db #0x08	;  8
-      00002E 03                     116 	.db #0x03	; 3
-      00002F 00                     117 	.db #0x00	; 0
-      000030 80                     118 	.db #0x80	; -128
-      000031 00                     119 	.db #0x00	;  0
-      000032 00                     120 	.db #0x00	; 0
-      000033 00                     121 	.db #0x00	; 0
-      000034                        122 _player_metasprites:
-      000034r20r00                  123 	.dw _player_down
-      000036                        124 _map_collision:
-      000036 31                     125 	.db #0x31	; 49	'1'
-      000037 31                     126 	.db #0x31	; 49	'1'
-      000038 31                     127 	.db #0x31	; 49	'1'
-      000039 31                     128 	.db #0x31	; 49	'1'
-      00003A 31                     129 	.db #0x31	; 49	'1'
-      00003B 31                     130 	.db #0x31	; 49	'1'
-      00003C 31                     131 	.db #0x31	; 49	'1'
-      00003D 31                     132 	.db #0x31	; 49	'1'
-      00003E 31                     133 	.db #0x31	; 49	'1'
-      00003F 31                     134 	.db #0x31	; 49	'1'
-      000040 00                     135 	.db 0x00
-      000041 31                     136 	.db #0x31	; 49	'1'
-      000042 31                     137 	.db #0x31	; 49	'1'
-      000043 31                     138 	.db #0x31	; 49	'1'
-      000044 31                     139 	.db #0x31	; 49	'1'
-      000045 31                     140 	.db #0x31	; 49	'1'
-      000046 31                     141 	.db #0x31	; 49	'1'
-      000047 31                     142 	.db #0x31	; 49	'1'
-      000048 31                     143 	.db #0x31	; 49	'1'
-      000049 31                     144 	.db #0x31	; 49	'1'
-      00004A 31                     145 	.db #0x31	; 49	'1'
-      00004B 00                     146 	.db 0x00
-      00004C 31                     147 	.db #0x31	; 49	'1'
-      00004D 31                     148 	.db #0x31	; 49	'1'
-      00004E 31                     149 	.db #0x31	; 49	'1'
-      00004F 31                     150 	.db #0x31	; 49	'1'
-      000050 30                     151 	.db #0x30	; 48	'0'
-      000051 30                     152 	.db #0x30	; 48	'0'
-      000052 30                     153 	.db #0x30	; 48	'0'
-      000053 30                     154 	.db #0x30	; 48	'0'
-      000054 30                     155 	.db #0x30	; 48	'0'
-      000055 31                     156 	.db #0x31	; 49	'1'
-      000056 00                     157 	.db 0x00
-      000057 31                     158 	.db #0x31	; 49	'1'
-      000058 31                     159 	.db #0x31	; 49	'1'
-      000059 31                     160 	.db #0x31	; 49	'1'
-      00005A 31                     161 	.db #0x31	; 49	'1'
-      00005B 30                     162 	.db #0x30	; 48	'0'
-      00005C 31                     163 	.db #0x31	; 49	'1'
-      00005D 30                     164 	.db #0x30	; 48	'0'
-      00005E 31                     165 	.db #0x31	; 49	'1'
-      00005F 30                     166 	.db #0x30	; 48	'0'
-      000060 31                     167 	.db #0x31	; 49	'1'
-      000061 00                     168 	.db 0x00
-      000062 30                     169 	.db #0x30	; 48	'0'
-      000063 30                     170 	.db #0x30	; 48	'0'
-      000064 30                     171 	.db #0x30	; 48	'0'
-      000065 30                     172 	.db #0x30	; 48	'0'
-      000066 30                     173 	.db #0x30	; 48	'0'
-      000067 30                     174 	.db #0x30	; 48	'0'
-      000068 30                     175 	.db #0x30	; 48	'0'
-      000069 30                     176 	.db #0x30	; 48	'0'
-      00006A 30                     177 	.db #0x30	; 48	'0'
-      00006B 31                     178 	.db #0x31	; 49	'1'
-      00006C 00                     179 	.db 0x00
-      00006D 31                     180 	.db #0x31	; 49	'1'
-      00006E 31                     181 	.db #0x31	; 49	'1'
-      00006F 31                     182 	.db #0x31	; 49	'1'
-      000070 31                     183 	.db #0x31	; 49	'1'
-      000071 30                     184 	.db #0x30	; 48	'0'
-      000072 31                     185 	.db #0x31	; 49	'1'
-      000073 30                     186 	.db #0x30	; 48	'0'
-      000074 31                     187 	.db #0x31	; 49	'1'
-      000075 30                     188 	.db #0x30	; 48	'0'
-      000076 31                     189 	.db #0x31	; 49	'1'
-      000077 00                     190 	.db 0x00
-      000078 31                     191 	.db #0x31	; 49	'1'
-      000079 31                     192 	.db #0x31	; 49	'1'
-      00007A 31                     193 	.db #0x31	; 49	'1'
-      00007B 31                     194 	.db #0x31	; 49	'1'
-      00007C 30                     195 	.db #0x30	; 48	'0'
-      00007D 30                     196 	.db #0x30	; 48	'0'
-      00007E 30                     197 	.db #0x30	; 48	'0'
-      00007F 30                     198 	.db #0x30	; 48	'0'
-      000080 30                     199 	.db #0x30	; 48	'0'
-      000081 31                     200 	.db #0x31	; 49	'1'
-      000082 00                     201 	.db 0x00
-      000083 31                     202 	.db #0x31	; 49	'1'
-      000084 31                     203 	.db #0x31	; 49	'1'
-      000085 31                     204 	.db #0x31	; 49	'1'
-      000086 31                     205 	.db #0x31	; 49	'1'
-      000087 31                     206 	.db #0x31	; 49	'1'
-      000088 31                     207 	.db #0x31	; 49	'1'
-      000089 31                     208 	.db #0x31	; 49	'1'
-      00008A 31                     209 	.db #0x31	; 49	'1'
-      00008B 31                     210 	.db #0x31	; 49	'1'
-      00008C 31                     211 	.db #0x31	; 49	'1'
-      00008D 00                     212 	.db 0x00
-      00008E 31                     213 	.db #0x31	; 49	'1'
-      00008F 31                     214 	.db #0x31	; 49	'1'
-      000090 31                     215 	.db #0x31	; 49	'1'
-      000091 31                     216 	.db #0x31	; 49	'1'
-      000092 31                     217 	.db #0x31	; 49	'1'
-      000093 31                     218 	.db #0x31	; 49	'1'
-      000094 31                     219 	.db #0x31	; 49	'1'
-      000095 31                     220 	.db #0x31	; 49	'1'
-      000096 31                     221 	.db #0x31	; 49	'1'
-      000097 31                     222 	.db #0x31	; 49	'1'
-      000098 00                     223 	.db 0x00
-      000099 00                     224 	.db 0x00
-      00009A 00                     225 	.db 0x00
-      00009B 00                     226 	.db 0x00
-      00009C 00                     227 	.db 0x00
-      00009D 00                     228 	.db 0x00
-      00009E 00                     229 	.db 0x00
-      00009F 00                     230 	.db 0x00
-      0000A0 00                     231 	.db 0x00
-      0000A1 00                     232 	.db 0x00
-      0000A2 00                     233 	.db 0x00
-      0000A3 00                     234 	.db 0x00
-                                    235 ;src\main.c:47: void printMap() {
-                                    236 ;	---------------------------------
-                                    237 ; Function printMap
-                                    238 ; ---------------------------------
-      0000A4                        239 _printMap::
-                                    240 ;src\main.c:48: for (uint8_t y = 0; y < 11; y++)
-      0000A4 0E 00            [ 8]  241 	ld	c, #0x00
-      0000A6                        242 00107$:
-      0000A6 79               [ 4]  243 	ld	a, c
-      0000A7 D6 0B            [ 8]  244 	sub	a, #0x0b
-      0000A9 D0               [20]  245 	ret	NC
-                                    246 ;src\main.c:50: for (uint8_t x = 0; x < 10; x++)
-      0000AA 06 00            [ 8]  247 	ld	b, #0x00
-      0000AC 69               [ 4]  248 	ld	l, c
-      0000AD 60               [ 4]  249 	ld	h, b
-      0000AE 29               [ 8]  250 	add	hl, hl
-      0000AF 29               [ 8]  251 	add	hl, hl
-      0000B0 09               [ 8]  252 	add	hl, bc
-      0000B1 29               [ 8]  253 	add	hl, hl
-      0000B2 09               [ 8]  254 	add	hl, bc
-      0000B3 7D               [ 4]  255 	ld	a, l
-      0000B4 C6r36            [ 8]  256 	add	a, #<(_map_collision)
-      0000B6 5F               [ 4]  257 	ld	e, a
-      0000B7 7C               [ 4]  258 	ld	a, h
-      0000B8 CEs00            [ 8]  259 	adc	a, #>(_map_collision)
-      0000BA 57               [ 4]  260 	ld	d, a
-      0000BB 06 00            [ 8]  261 	ld	b, #0x00
-      0000BD                        262 00104$:
-      0000BD 78               [ 4]  263 	ld	a, b
-      0000BE D6 0A            [ 8]  264 	sub	a, #0x0a
-      0000C0 30 18            [12]  265 	jr	NC, 00101$
-                                    266 ;src\main.c:52: printf("%c ", map_collision[y][x]);
-      0000C2 68               [ 4]  267 	ld	l, b
-      0000C3 26 00            [ 8]  268 	ld	h, #0x00
-      0000C5 19               [ 8]  269 	add	hl, de
-      0000C6 6E               [ 8]  270 	ld	l, (hl)
-                                    271 ;	spillPairReg hl
-      0000C7 26 00            [ 8]  272 	ld	h, #0x00
-                                    273 ;	spillPairReg hl
-                                    274 ;	spillPairReg hl
-      0000C9 C5               [16]  275 	push	bc
-      0000CA D5               [16]  276 	push	de
-      0000CB E5               [16]  277 	push	hl
-      0000CC 21rE5r00         [12]  278 	ld	hl, #___str_0
-      0000CF E5               [16]  279 	push	hl
-      0000D0 CDr00r00         [24]  280 	call	_printf
-      0000D3 E8 04            [16]  281 	add	sp, #4
-      0000D5 D1               [12]  282 	pop	de
-      0000D6 C1               [12]  283 	pop	bc
-                                    284 ;src\main.c:50: for (uint8_t x = 0; x < 10; x++)
-      0000D7 04               [ 4]  285 	inc	b
-      0000D8 18 E3            [12]  286 	jr	00104$
-      0000DA                        287 00101$:
-                                    288 ;src\main.c:54: printf("\n\n");
-      0000DA C5               [16]  289 	push	bc
-      0000DB 11rE9r00         [12]  290 	ld	de, #___str_2
-      0000DE CDr00r00         [24]  291 	call	_puts
-      0000E1 C1               [12]  292 	pop	bc
-                                    293 ;src\main.c:48: for (uint8_t y = 0; y < 11; y++)
-      0000E2 0C               [ 4]  294 	inc	c
-                                    295 ;src\main.c:56: }
-      0000E3 18 C1            [12]  296 	jr	00107$
-      0000E5                        297 ___str_0:
-      0000E5 25 63 20               298 	.ascii "%c "
-      0000E8 00                     299 	.db 0x00
-      0000E9                        300 ___str_2:
-      0000E9 0A                     301 	.db 0x0a
-      0000EA 00                     302 	.db 0x00
-                                    303 ;src\main.c:58: void init_gfx() {
-                                    304 ;	---------------------------------
-                                    305 ; Function init_gfx
-                                    306 ; ---------------------------------
-      0000EB                        307 _init_gfx::
-                                    308 ;src\main.c:60: set_bkg_data(0, 54u, TileLabel);
-      0000EB 11r00r00         [12]  309 	ld	de, #_TileLabel
-      0000EE D5               [16]  310 	push	de
-      0000EF 21 00 36         [12]  311 	ld	hl, #0x3600
-      0000F2 E5               [16]  312 	push	hl
-      0000F3 CDr00r00         [24]  313 	call	_set_bkg_data
-      0000F6 E8 04            [16]  314 	add	sp, #4
-                                    315 ;src\main.c:61: set_bkg_tiles(0, 0, 20u, 18u, Visual_Map);
-      0000F8 11r00r00         [12]  316 	ld	de, #_Visual_Map
-      0000FB D5               [16]  317 	push	de
-      0000FC 21 14 12         [12]  318 	ld	hl, #0x1214
-      0000FF E5               [16]  319 	push	hl
-      000100 AF               [ 4]  320 	xor	a, a
-      000101 0F               [ 4]  321 	rrca
-      000102 F5               [16]  322 	push	af
-      000103 CDr00r00         [24]  323 	call	_set_bkg_tiles
-      000106 E8 06            [16]  324 	add	sp, #6
-                                    325 ;src\main.c:64: SHOW_BKG;
-      000108 F0r00            [12]  326 	ldh	a, (_LCDC_REG + 0)
-      00010A F6 01            [ 8]  327 	or	a, #0x01
-      00010C E0r00            [12]  328 	ldh	(_LCDC_REG + 0), a
-                                    329 ;src\main.c:67: set_sprite_data(0, 45u, Cast_Tiles);
-      00010E 11r00r00         [12]  330 	ld	de, #_Cast_Tiles
-      000111 D5               [16]  331 	push	de
-      000112 21 00 2D         [12]  332 	ld	hl, #0x2d00
-      000115 E5               [16]  333 	push	hl
-      000116 CDr00r00         [24]  334 	call	_set_sprite_data
-      000119 E8 04            [16]  335 	add	sp, #4
-                                    336 ;src\main.c:68: SHOW_SPRITES;
-      00011B F0r00            [12]  337 	ldh	a, (_LCDC_REG + 0)
-      00011D F6 02            [ 8]  338 	or	a, #0x02
-      00011F E0r00            [12]  339 	ldh	(_LCDC_REG + 0), a
-                                    340 ;src\main.c:69: }
-      000121 C9               [16]  341 	ret
-                                    342 ;src\main.c:73: void main(void)
-                                    343 ;	---------------------------------
-                                    344 ; Function main
-                                    345 ; ---------------------------------
-      000122                        346 _main::
-      000122 E8 F8            [16]  347 	add	sp, #-8
-                                    348 ;src\main.c:76: uint8_t local_x = 4; // LOCAL LOCATION ON MAP
-      000124 F8 01            [12]  349 	ldhl	sp,	#1
-                                    350 ;src\main.c:77: uint8_t local_y = 4;
-      000126 3E 04            [ 8]  351 	ld	a, #0x04
-      000128 22               [ 8]  352 	ld	(hl+), a
-      000129 36 04            [12]  353 	ld	(hl), #0x04
-                                    354 ;src\main.c:78: uint8_t sprite_x = 80; // SPRITE LOCATION ON SCREEN
-      00012B F8 06            [12]  355 	ldhl	sp,	#6
-                                    356 ;src\main.c:79: uint8_t sprite_y = 88;
-      00012D 3E 50            [ 8]  357 	ld	a, #0x50
-      00012F 22               [ 8]  358 	ld	(hl+), a
-      000130 36 58            [12]  359 	ld	(hl), #0x58
-                                    360 ;src\main.c:81: enum player_state state = idle;
-      000132 F8 03            [12]  361 	ldhl	sp,	#3
-      000134 36 00            [12]  362 	ld	(hl), #0x00
-                                    363 ;src\main.c:82: init_gfx();
-      000136 CDrEBr00         [24]  364 	call	_init_gfx
-                                    365 ;src\main.c:83: volatile uint8_t timer = 0;
-      000139 F8 00            [12]  366 	ldhl	sp,	#0
-      00013B 36 00            [12]  367 	ld	(hl), #0x00
-                                    368 ;src\main.c:84: move_metasprite(player_metasprites[0], 0, 0, 80, 88);
-      00013D 21r34r00         [12]  369 	ld	hl, #_player_metasprites
-      000140 2A               [ 8]  370 	ld	a, (hl+)
-      000141 4F               [ 4]  371 	ld	c, a
-      000142 7E               [ 8]  372 	ld	a, (hl)
-                                    373 ;C:/gbdk/include/gb/metasprites.h:140: __current_metasprite = metasprite;
-      000143 21r00r00         [12]  374 	ld	hl, #___current_metasprite
-      000146 71               [ 8]  375 	ld	(hl), c
-      000147 23               [ 8]  376 	inc	hl
-      000148 77               [ 8]  377 	ld	(hl), a
-                                    378 ;C:/gbdk/include/gb/metasprites.h:141: __current_base_tile = base_tile;
-      000149 21r00r00         [12]  379 	ld	hl, #___current_base_tile
-      00014C 36 00            [12]  380 	ld	(hl), #0x00
-                                    381 ;C:/gbdk/include/gb/metasprites.h:142: return __move_metasprite(base_sprite, x, y);
-      00014E 21 50 58         [12]  382 	ld	hl, #0x5850
-      000151 E5               [16]  383 	push	hl
-      000152 AF               [ 4]  384 	xor	a, a
-      000153 F5               [16]  385 	push	af
-      000154 33               [ 8]  386 	inc	sp
-      000155 CDr00r00         [24]  387 	call	___move_metasprite
-      000158 E8 03            [16]  388 	add	sp, #3
-                                    389 ;src\main.c:87: while(1) {
-      00015A F8 04            [12]  390 	ldhl	sp,	#4
-      00015C 36 00            [12]  391 	ld	(hl), #0x00
-      00015E 23               [ 8]  392 	inc	hl
-      00015F 36 00            [12]  393 	ld	(hl), #0x00
-      000161                        394 00147$:
-                                    395 ;src\main.c:88: joy = joypad();
-      000161 CDr00r00         [24]  396 	call	_joypad
-      000164 EAr00r00         [16]  397 	ld	(#_joy),a
-                                    398 ;src\main.c:89: timer++;
-      000167 F8 00            [12]  399 	ldhl	sp,	#0
-      000169 34               [12]  400 	inc	(hl)
-      00016A 7E               [ 8]  401 	ld	a, (hl)
-                                    402 ;src\main.c:90: if (state == idle)
-      00016B F8 03            [12]  403 	ldhl	sp,	#3
-      00016D 7E               [ 8]  404 	ld	a, (hl)
-      00016E B7               [ 4]  405 	or	a, a
-      00016F C2r07r02         [16]  406 	jp	NZ, 00144$
-                                    407 ;src\main.c:93: if (joy & J_UP)
-      000172 FAr00r00         [16]  408 	ld	a, (#_joy)
-                                    409 ;src\main.c:95: if (check_map(local_x, local_y - 1) == '0')
-      000175 F8 02            [12]  410 	ldhl	sp,	#2
-      000177 46               [ 8]  411 	ld	b, (hl)
-                                    412 ;src\main.c:98: goal_y = sprite_y - 16;
-      000178 F8 07            [12]  413 	ldhl	sp,	#7
-      00017A 4E               [ 8]  414 	ld	c, (hl)
-                                    415 ;src\main.c:93: if (joy & J_UP)
-      00017B CB 57            [ 8]  416 	bit	2, a
-      00017D 28 1E            [12]  417 	jr	Z, 00118$
-                                    418 ;src\main.c:95: if (check_map(local_x, local_y - 1) == '0')
-      00017F 05               [ 4]  419 	dec	b
-      000180 C5               [16]  420 	push	bc
-      000181 58               [ 4]  421 	ld	e, b
-      000182 F8 03            [12]  422 	ldhl	sp,	#3
-      000184 7E               [ 8]  423 	ld	a, (hl)
-      000185 CDr0Cr00         [24]  424 	call	_check_map
-      000188 C1               [12]  425 	pop	bc
-      000189 D6 30            [ 8]  426 	sub	a, #0x30
-      00018B C2r0Er03         [16]  427 	jp	NZ,00145$
-                                    428 ;src\main.c:97: local_y -= 1;
-      00018E F8 02            [12]  429 	ldhl	sp,	#2
-      000190 70               [ 8]  430 	ld	(hl), b
-                                    431 ;src\main.c:98: goal_y = sprite_y - 16;
-      000191 79               [ 4]  432 	ld	a, c
-      000192 C6 F0            [ 8]  433 	add	a, #0xf0
-      000194 F8 05            [12]  434 	ldhl	sp,	#5
-                                    435 ;src\main.c:99: state = up;
-      000196 32               [ 8]  436 	ld	(hl-), a
-      000197 2B               [ 8]  437 	dec	hl
-      000198 36 03            [12]  438 	ld	(hl), #0x03
-      00019A C3r0Er03         [16]  439 	jp	00145$
-      00019D                        440 00118$:
-                                    441 ;src\main.c:104: else if (joy & J_DOWN)
-      00019D CB 5F            [ 8]  442 	bit	3, a
-      00019F 28 1E            [12]  443 	jr	Z, 00115$
-                                    444 ;src\main.c:106: if (check_map(local_x, local_y + 1) == '0')
-      0001A1 04               [ 4]  445 	inc	b
-      0001A2 C5               [16]  446 	push	bc
-      0001A3 58               [ 4]  447 	ld	e, b
-      0001A4 F8 03            [12]  448 	ldhl	sp,	#3
-      0001A6 7E               [ 8]  449 	ld	a, (hl)
-      0001A7 CDr0Cr00         [24]  450 	call	_check_map
-      0001AA C1               [12]  451 	pop	bc
-      0001AB D6 30            [ 8]  452 	sub	a, #0x30
-      0001AD C2r0Er03         [16]  453 	jp	NZ,00145$
-                                    454 ;src\main.c:108: local_y += 1;
-      0001B0 F8 02            [12]  455 	ldhl	sp,	#2
-      0001B2 70               [ 8]  456 	ld	(hl), b
-                                    457 ;src\main.c:109: goal_y = sprite_y + 16;
-      0001B3 79               [ 4]  458 	ld	a, c
-      0001B4 C6 10            [ 8]  459 	add	a, #0x10
-      0001B6 F8 05            [12]  460 	ldhl	sp,	#5
-                                    461 ;src\main.c:110: state = down;
-      0001B8 32               [ 8]  462 	ld	(hl-), a
-      0001B9 2B               [ 8]  463 	dec	hl
-      0001BA 36 04            [12]  464 	ld	(hl), #0x04
-      0001BC C3r0Er03         [16]  465 	jp	00145$
-      0001BF                        466 00115$:
-                                    467 ;src\main.c:117: if (check_map(local_x - 1, local_y) == '0')
-      0001BF F8 01            [12]  468 	ldhl	sp,	#1
-      0001C1 46               [ 8]  469 	ld	b, (hl)
-                                    470 ;src\main.c:120: goal_x = sprite_x - 16;
-      0001C2 F8 06            [12]  471 	ldhl	sp,	#6
-      0001C4 4E               [ 8]  472 	ld	c, (hl)
-                                    473 ;src\main.c:115: else if (joy & J_LEFT)
-      0001C5 CB 4F            [ 8]  474 	bit	1, a
-      0001C7 28 1D            [12]  475 	jr	Z, 00112$
-                                    476 ;src\main.c:117: if (check_map(local_x - 1, local_y) == '0')
-      0001C9 05               [ 4]  477 	dec	b
-      0001CA C5               [16]  478 	push	bc
-      0001CB F8 04            [12]  479 	ldhl	sp,	#4
-      0001CD 5E               [ 8]  480 	ld	e, (hl)
-      0001CE 78               [ 4]  481 	ld	a, b
-      0001CF CDr0Cr00         [24]  482 	call	_check_map
-      0001D2 C1               [12]  483 	pop	bc
-      0001D3 D6 30            [ 8]  484 	sub	a, #0x30
-      0001D5 C2r0Er03         [16]  485 	jp	NZ,00145$
-                                    486 ;src\main.c:119: local_x -= 1;
-      0001D8 F8 01            [12]  487 	ldhl	sp,	#1
-      0001DA 70               [ 8]  488 	ld	(hl), b
-                                    489 ;src\main.c:120: goal_x = sprite_x - 16;
-      0001DB 79               [ 4]  490 	ld	a, c
-      0001DC C6 F0            [ 8]  491 	add	a, #0xf0
-      0001DE F8 04            [12]  492 	ldhl	sp,	#4
-                                    493 ;src\main.c:121: state = left;
-      0001E0 32               [ 8]  494 	ld	(hl-), a
-      0001E1 36 01            [12]  495 	ld	(hl), #0x01
-      0001E3 C3r0Er03         [16]  496 	jp	00145$
-      0001E6                        497 00112$:
-                                    498 ;src\main.c:126: else if (joy  & J_RIGHT)
-      0001E6 0F               [ 4]  499 	rrca
-      0001E7 D2r0Er03         [16]  500 	jp	NC,00145$
-                                    501 ;src\main.c:128: if (check_map(local_x + 1, local_y) == '0')
-      0001EA 04               [ 4]  502 	inc	b
-      0001EB C5               [16]  503 	push	bc
-      0001EC F8 04            [12]  504 	ldhl	sp,	#4
-      0001EE 5E               [ 8]  505 	ld	e, (hl)
-      0001EF 78               [ 4]  506 	ld	a, b
-      0001F0 CDr0Cr00         [24]  507 	call	_check_map
-      0001F3 C1               [12]  508 	pop	bc
-      0001F4 D6 30            [ 8]  509 	sub	a, #0x30
-      0001F6 C2r0Er03         [16]  510 	jp	NZ,00145$
-                                    511 ;src\main.c:130: local_x += 1;
-      0001F9 F8 01            [12]  512 	ldhl	sp,	#1
-      0001FB 70               [ 8]  513 	ld	(hl), b
-                                    514 ;src\main.c:131: goal_x = sprite_x + 16;
-      0001FC 79               [ 4]  515 	ld	a, c
-      0001FD C6 10            [ 8]  516 	add	a, #0x10
-      0001FF F8 04            [12]  517 	ldhl	sp,	#4
-                                    518 ;src\main.c:132: state = right;
-      000201 32               [ 8]  519 	ld	(hl-), a
-      000202 36 02            [12]  520 	ld	(hl), #0x02
-      000204 C3r0Er03         [16]  521 	jp	00145$
-      000207                        522 00144$:
-                                    523 ;src\main.c:139: else if (state == right) // switch(state)
-      000207 F8 03            [12]  524 	ldhl	sp,	#3
-      000209 7E               [ 8]  525 	ld	a, (hl)
-      00020A D6 02            [ 8]  526 	sub	a, #0x02
-      00020C 20 38            [12]  527 	jr	NZ, 00141$
-                                    528 ;src\main.c:141: if (sprite_x < goal_x)
-      00020E F8 06            [12]  529 	ldhl	sp,	#6
-      000210 3A               [ 8]  530 	ld	a, (hl-)
-      000211 2B               [ 8]  531 	dec	hl
-      000212 96               [ 8]  532 	sub	a, (hl)
-      000213 30 2A            [12]  533 	jr	NC, 00121$
-                                    534 ;src\main.c:143: sprite_x++;
-      000215 23               [ 8]  535 	inc	hl
-      000216 23               [ 8]  536 	inc	hl
-      000217 34               [12]  537 	inc	(hl)
-                                    538 ;src\main.c:144: move_metasprite(player_metasprites[0], 0, 0, sprite_x, sprite_y);
-      000218 21r34r00         [12]  539 	ld	hl, #_player_metasprites
-      00021B 2A               [ 8]  540 	ld	a, (hl+)
-      00021C 4F               [ 4]  541 	ld	c, a
-      00021D 7E               [ 8]  542 	ld	a, (hl)
-                                    543 ;C:/gbdk/include/gb/metasprites.h:140: __current_metasprite = metasprite;
-      00021E 21r00r00         [12]  544 	ld	hl, #___current_metasprite
-      000221 71               [ 8]  545 	ld	(hl), c
-      000222 23               [ 8]  546 	inc	hl
-      000223 77               [ 8]  547 	ld	(hl), a
-                                    548 ;C:/gbdk/include/gb/metasprites.h:141: __current_base_tile = base_tile;
-      000224 21r00r00         [12]  549 	ld	hl, #___current_base_tile
-      000227 36 00            [12]  550 	ld	(hl), #0x00
-                                    551 ;C:/gbdk/include/gb/metasprites.h:142: return __move_metasprite(base_sprite, x, y);
-      000229 F8 07            [12]  552 	ldhl	sp,	#7
-      00022B 3A               [ 8]  553 	ld	a, (hl-)
-      00022C F5               [16]  554 	push	af
-      00022D 33               [ 8]  555 	inc	sp
-      00022E 66               [ 8]  556 	ld	h, (hl)
-      00022F 2E 00            [ 8]  557 	ld	l, #0x00
-      000231 E5               [16]  558 	push	hl
-      000232 CDr00r00         [24]  559 	call	___move_metasprite
-      000235 E8 03            [16]  560 	add	sp, #3
-                                    561 ;src\main.c:145: performantdelay(5); // speed variable magic number
-      000237 3E 05            [ 8]  562 	ld	a, #0x05
-      000239 CDr00r00         [24]  563 	call	_performantdelay
-      00023C C3r0Er03         [16]  564 	jp	00145$
-      00023F                        565 00121$:
-                                    566 ;src\main.c:149: state = idle;
-      00023F F8 03            [12]  567 	ldhl	sp,	#3
-      000241 36 00            [12]  568 	ld	(hl), #0x00
-      000243 C3r0Er03         [16]  569 	jp	00145$
-      000246                        570 00141$:
-                                    571 ;src\main.c:152: else if (state == left)
-      000246 F8 03            [12]  572 	ldhl	sp,	#3
-      000248 7E               [ 8]  573 	ld	a, (hl)
-      000249 3D               [ 4]  574 	dec	a
-      00024A 20 36            [12]  575 	jr	NZ, 00138$
-                                    576 ;src\main.c:154: if (sprite_x > goal_x)
-      00024C F8 04            [12]  577 	ldhl	sp,	#4
-      00024E 2A               [ 8]  578 	ld	a, (hl+)
-      00024F 23               [ 8]  579 	inc	hl
-      000250 96               [ 8]  580 	sub	a, (hl)
-      000251 30 28            [12]  581 	jr	NC, 00124$
-                                    582 ;src\main.c:156: sprite_x--;
-      000253 35               [12]  583 	dec	(hl)
-                                    584 ;src\main.c:157: move_metasprite(player_metasprites[0], 0, 0, sprite_x, sprite_y);
-      000254 21r34r00         [12]  585 	ld	hl, #_player_metasprites
-      000257 2A               [ 8]  586 	ld	a, (hl+)
-      000258 4F               [ 4]  587 	ld	c, a
-      000259 7E               [ 8]  588 	ld	a, (hl)
-                                    589 ;C:/gbdk/include/gb/metasprites.h:140: __current_metasprite = metasprite;
-      00025A 21r00r00         [12]  590 	ld	hl, #___current_metasprite
-      00025D 71               [ 8]  591 	ld	(hl), c
-      00025E 23               [ 8]  592 	inc	hl
-      00025F 77               [ 8]  593 	ld	(hl), a
-                                    594 ;C:/gbdk/include/gb/metasprites.h:141: __current_base_tile = base_tile;
-      000260 21r00r00         [12]  595 	ld	hl, #___current_base_tile
-      000263 36 00            [12]  596 	ld	(hl), #0x00
-                                    597 ;C:/gbdk/include/gb/metasprites.h:142: return __move_metasprite(base_sprite, x, y);
-      000265 F8 07            [12]  598 	ldhl	sp,	#7
-      000267 3A               [ 8]  599 	ld	a, (hl-)
-      000268 F5               [16]  600 	push	af
-      000269 33               [ 8]  601 	inc	sp
-      00026A 66               [ 8]  602 	ld	h, (hl)
-      00026B 2E 00            [ 8]  603 	ld	l, #0x00
-      00026D E5               [16]  604 	push	hl
-      00026E CDr00r00         [24]  605 	call	___move_metasprite
-      000271 E8 03            [16]  606 	add	sp, #3
-                                    607 ;src\main.c:158: performantdelay(5); // speed variable magic number
-      000273 3E 05            [ 8]  608 	ld	a, #0x05
-      000275 CDr00r00         [24]  609 	call	_performantdelay
-      000278 C3r0Er03         [16]  610 	jp	00145$
-      00027B                        611 00124$:
-                                    612 ;src\main.c:162: state = idle;
-      00027B F8 03            [12]  613 	ldhl	sp,	#3
-      00027D 36 00            [12]  614 	ld	(hl), #0x00
-      00027F C3r0Er03         [16]  615 	jp	00145$
-      000282                        616 00138$:
-                                    617 ;src\main.c:165: else if (state == down)
-      000282 F8 03            [12]  618 	ldhl	sp,	#3
-      000284 7E               [ 8]  619 	ld	a, (hl)
-      000285 D6 04            [ 8]  620 	sub	a, #0x04
-      000287 20 4C            [12]  621 	jr	NZ, 00135$
-                                    622 ;src\main.c:167: if(sprite_y < goal_y)
-      000289 F8 07            [12]  623 	ldhl	sp,	#7
-      00028B 3A               [ 8]  624 	ld	a, (hl-)
-      00028C 2B               [ 8]  625 	dec	hl
-      00028D 96               [ 8]  626 	sub	a, (hl)
-      00028E 30 3F            [12]  627 	jr	NC, 00127$
-                                    628 ;src\main.c:169: sprite_y++;
-      000290 23               [ 8]  629 	inc	hl
-      000291 23               [ 8]  630 	inc	hl
-      000292 34               [12]  631 	inc	(hl)
-                                    632 ;src\main.c:170: move_metasprite_hvflip(player_metasprites[0], 0, 0, sprite_x, sprite_y);
-      000293 21r34r00         [12]  633 	ld	hl, #_player_metasprites
-      000296 2A               [ 8]  634 	ld	a, (hl+)
-      000297 47               [ 4]  635 	ld	b, a
-      000298 7E               [ 8]  636 	ld	a, (hl)
-      000299 F8 07            [12]  637 	ldhl	sp,	#7
-      00029B 4E               [ 8]  638 	ld	c, (hl)
-      00029C 2B               [ 8]  639 	dec	hl
-      00029D 5E               [ 8]  640 	ld	e, (hl)
-                                    641 ;C:/gbdk/include/gb/metasprites.h:228: __current_metasprite = metasprite;
-      00029E 21r00r00         [12]  642 	ld	hl, #___current_metasprite
-      0002A1 70               [ 8]  643 	ld	(hl), b
-      0002A2 23               [ 8]  644 	inc	hl
-      0002A3 77               [ 8]  645 	ld	(hl), a
-                                    646 ;C:/gbdk/include/gb/metasprites.h:229: __current_base_tile = base_tile;
-      0002A4 21r00r00         [12]  647 	ld	hl, #___current_base_tile
-      0002A7 36 00            [12]  648 	ld	(hl), #0x00
-                                    649 ;C:/gbdk/include/gb/metasprites.h:230: return __move_metasprite_hvflip(base_sprite, x - 8, y - ((LCDC_REG & 0x04U) ? 16 : 8));
-      0002A9 F0r00            [12]  650 	ldh	a, (_LCDC_REG + 0)
-      0002AB CB 57            [ 8]  651 	bit	2, a
-      0002AD 28 05            [12]  652 	jr	Z, 00156$
-      0002AF 21 10 00         [12]  653 	ld	hl, #0x0010
-      0002B2 18 03            [12]  654 	jr	00157$
-      0002B4                        655 00156$:
-      0002B4 21 08 00         [12]  656 	ld	hl, #0x0008
-      0002B7                        657 00157$:
-      0002B7 79               [ 4]  658 	ld	a, c
-      0002B8 95               [ 4]  659 	sub	a, l
-      0002B9 47               [ 4]  660 	ld	b, a
-      0002BA 7B               [ 4]  661 	ld	a, e
-      0002BB C6 F8            [ 8]  662 	add	a, #0xf8
-      0002BD C5               [16]  663 	push	bc
-      0002BE 33               [ 8]  664 	inc	sp
-      0002BF 67               [ 4]  665 	ld	h, a
-      0002C0 2E 00            [ 8]  666 	ld	l, #0x00
-      0002C2 E5               [16]  667 	push	hl
-      0002C3 CDr00r00         [24]  668 	call	___move_metasprite_hvflip
-      0002C6 E8 03            [16]  669 	add	sp, #3
-                                    670 ;src\main.c:171: performantdelay(5);// speed variable magic number
-      0002C8 3E 05            [ 8]  671 	ld	a, #0x05
-      0002CA CDr00r00         [24]  672 	call	_performantdelay
-      0002CD 18 3F            [12]  673 	jr	00145$
-      0002CF                        674 00127$:
-                                    675 ;src\main.c:174: state = idle;
-      0002CF F8 03            [12]  676 	ldhl	sp,	#3
-      0002D1 36 00            [12]  677 	ld	(hl), #0x00
-      0002D3 18 39            [12]  678 	jr	00145$
-      0002D5                        679 00135$:
-                                    680 ;src\main.c:177: else if (state == up)
-      0002D5 F8 03            [12]  681 	ldhl	sp,	#3
-      0002D7 7E               [ 8]  682 	ld	a, (hl)
-      0002D8 D6 03            [ 8]  683 	sub	a, #0x03
-      0002DA 20 32            [12]  684 	jr	NZ, 00145$
-                                    685 ;src\main.c:179: if (sprite_y > goal_y)
-      0002DC F8 05            [12]  686 	ldhl	sp,	#5
-      0002DE 2A               [ 8]  687 	ld	a, (hl+)
-      0002DF 23               [ 8]  688 	inc	hl
-      0002E0 96               [ 8]  689 	sub	a, (hl)
-      0002E1 30 27            [12]  690 	jr	NC, 00130$
-                                    691 ;src\main.c:181: sprite_y--;
-      0002E3 35               [12]  692 	dec	(hl)
-                                    693 ;src\main.c:182: move_metasprite(player_metasprites[0], 0, 0, sprite_x, sprite_y);
-      0002E4 21r34r00         [12]  694 	ld	hl, #_player_metasprites
-      0002E7 2A               [ 8]  695 	ld	a, (hl+)
-      0002E8 4F               [ 4]  696 	ld	c, a
-      0002E9 7E               [ 8]  697 	ld	a, (hl)
-                                    698 ;C:/gbdk/include/gb/metasprites.h:140: __current_metasprite = metasprite;
-      0002EA 21r00r00         [12]  699 	ld	hl, #___current_metasprite
-      0002ED 71               [ 8]  700 	ld	(hl), c
-      0002EE 23               [ 8]  701 	inc	hl
-      0002EF 77               [ 8]  702 	ld	(hl), a
-                                    703 ;C:/gbdk/include/gb/metasprites.h:141: __current_base_tile = base_tile;
-      0002F0 21r00r00         [12]  704 	ld	hl, #___current_base_tile
-      0002F3 36 00            [12]  705 	ld	(hl), #0x00
-                                    706 ;C:/gbdk/include/gb/metasprites.h:142: return __move_metasprite(base_sprite, x, y);
-      0002F5 F8 07            [12]  707 	ldhl	sp,	#7
-      0002F7 3A               [ 8]  708 	ld	a, (hl-)
-      0002F8 F5               [16]  709 	push	af
-      0002F9 33               [ 8]  710 	inc	sp
-      0002FA 66               [ 8]  711 	ld	h, (hl)
-      0002FB 2E 00            [ 8]  712 	ld	l, #0x00
-      0002FD E5               [16]  713 	push	hl
-      0002FE CDr00r00         [24]  714 	call	___move_metasprite
-      000301 E8 03            [16]  715 	add	sp, #3
-                                    716 ;src\main.c:183: performantdelay(5); // speed variable magic number
-      000303 3E 05            [ 8]  717 	ld	a, #0x05
-      000305 CDr00r00         [24]  718 	call	_performantdelay
-      000308 18 04            [12]  719 	jr	00145$
-      00030A                        720 00130$:
-                                    721 ;src\main.c:186: state = idle;
-      00030A F8 03            [12]  722 	ldhl	sp,	#3
-      00030C 36 00            [12]  723 	ld	(hl), #0x00
-      00030E                        724 00145$:
-                                    725 ;src\main.c:190: wait_vbl_done();
-      00030E CDr00r00         [24]  726 	call	_wait_vbl_done
-      000311 C3r61r01         [16]  727 	jp	00147$
-                                    728 ;src\main.c:192: }
-      000314 E8 08            [16]  729 	add	sp, #8
-      000316 C9               [16]  730 	ret
-                                    731 	.area _CODE
-                                    732 	.area _INITIALIZER
-                                    733 	.area _CABS (ABS)
+                                     57 	.area _CODE
+                                     58 ;src\main.c:10: void performantdelay(uint8_t numloops)
+                                     59 ;	---------------------------------
+                                     60 ; Function performantdelay
+                                     61 ; ---------------------------------
+      000000                         62 _performantdelay::
+      000000 4F               [ 4]   63 	ld	c, a
+                                     64 ;src\main.c:13: for (ii = 0; ii < numloops; ii++)
+      000001 06 00            [ 8]   65 	ld	b, #0x00
+      000003                         66 00103$:
+      000003 78               [ 4]   67 	ld	a, b
+      000004 91               [ 4]   68 	sub	a, c
+      000005 D0               [20]   69 	ret	NC
+                                     70 ;src\main.c:15: wait_vbl_done();
+      000006 CDr00r00         [24]   71 	call	_wait_vbl_done
+                                     72 ;src\main.c:13: for (ii = 0; ii < numloops; ii++)
+      000009 04               [ 4]   73 	inc	b
+                                     74 ;src\main.c:17: }
+      00000A 18 F7            [12]   75 	jr	00103$
+                                     76 ;src\main.c:33: char check_map(uint8_t x_pos, uint8_t y_pos)
+                                     77 ;	---------------------------------
+                                     78 ; Function check_map
+                                     79 ; ---------------------------------
+      00000C                         80 _check_map::
+      00000C 4F               [ 4]   81 	ld	c, a
+                                     82 ;src\main.c:35: return map_collision[y_pos][x_pos];
+      00000D 16 00            [ 8]   83 	ld	d, #0x00
+      00000F 6B               [ 4]   84 	ld	l, e
+      000010 62               [ 4]   85 	ld	h, d
+      000011 29               [ 8]   86 	add	hl, hl
+      000012 29               [ 8]   87 	add	hl, hl
+      000013 19               [ 8]   88 	add	hl, de
+      000014 29               [ 8]   89 	add	hl, hl
+      000015 19               [ 8]   90 	add	hl, de
+      000016 11r20r00         [12]   91 	ld	de, #_map_collision
+      000019 19               [ 8]   92 	add	hl, de
+      00001A 59               [ 4]   93 	ld	e, c
+      00001B 16 00            [ 8]   94 	ld	d, #0x00
+      00001D 19               [ 8]   95 	add	hl, de
+      00001E 7E               [ 8]   96 	ld	a, (hl)
+                                     97 ;src\main.c:36: }
+      00001F C9               [16]   98 	ret
+      000020                         99 _map_collision:
+      000020 31                     100 	.db #0x31	; 49	'1'
+      000021 31                     101 	.db #0x31	; 49	'1'
+      000022 31                     102 	.db #0x31	; 49	'1'
+      000023 31                     103 	.db #0x31	; 49	'1'
+      000024 31                     104 	.db #0x31	; 49	'1'
+      000025 31                     105 	.db #0x31	; 49	'1'
+      000026 31                     106 	.db #0x31	; 49	'1'
+      000027 31                     107 	.db #0x31	; 49	'1'
+      000028 31                     108 	.db #0x31	; 49	'1'
+      000029 31                     109 	.db #0x31	; 49	'1'
+      00002A 00                     110 	.db 0x00
+      00002B 31                     111 	.db #0x31	; 49	'1'
+      00002C 31                     112 	.db #0x31	; 49	'1'
+      00002D 31                     113 	.db #0x31	; 49	'1'
+      00002E 31                     114 	.db #0x31	; 49	'1'
+      00002F 31                     115 	.db #0x31	; 49	'1'
+      000030 31                     116 	.db #0x31	; 49	'1'
+      000031 31                     117 	.db #0x31	; 49	'1'
+      000032 31                     118 	.db #0x31	; 49	'1'
+      000033 31                     119 	.db #0x31	; 49	'1'
+      000034 31                     120 	.db #0x31	; 49	'1'
+      000035 00                     121 	.db 0x00
+      000036 31                     122 	.db #0x31	; 49	'1'
+      000037 31                     123 	.db #0x31	; 49	'1'
+      000038 31                     124 	.db #0x31	; 49	'1'
+      000039 31                     125 	.db #0x31	; 49	'1'
+      00003A 30                     126 	.db #0x30	; 48	'0'
+      00003B 30                     127 	.db #0x30	; 48	'0'
+      00003C 30                     128 	.db #0x30	; 48	'0'
+      00003D 30                     129 	.db #0x30	; 48	'0'
+      00003E 30                     130 	.db #0x30	; 48	'0'
+      00003F 31                     131 	.db #0x31	; 49	'1'
+      000040 00                     132 	.db 0x00
+      000041 31                     133 	.db #0x31	; 49	'1'
+      000042 31                     134 	.db #0x31	; 49	'1'
+      000043 31                     135 	.db #0x31	; 49	'1'
+      000044 31                     136 	.db #0x31	; 49	'1'
+      000045 30                     137 	.db #0x30	; 48	'0'
+      000046 31                     138 	.db #0x31	; 49	'1'
+      000047 30                     139 	.db #0x30	; 48	'0'
+      000048 31                     140 	.db #0x31	; 49	'1'
+      000049 30                     141 	.db #0x30	; 48	'0'
+      00004A 31                     142 	.db #0x31	; 49	'1'
+      00004B 00                     143 	.db 0x00
+      00004C 30                     144 	.db #0x30	; 48	'0'
+      00004D 30                     145 	.db #0x30	; 48	'0'
+      00004E 30                     146 	.db #0x30	; 48	'0'
+      00004F 30                     147 	.db #0x30	; 48	'0'
+      000050 30                     148 	.db #0x30	; 48	'0'
+      000051 30                     149 	.db #0x30	; 48	'0'
+      000052 30                     150 	.db #0x30	; 48	'0'
+      000053 30                     151 	.db #0x30	; 48	'0'
+      000054 30                     152 	.db #0x30	; 48	'0'
+      000055 31                     153 	.db #0x31	; 49	'1'
+      000056 00                     154 	.db 0x00
+      000057 31                     155 	.db #0x31	; 49	'1'
+      000058 31                     156 	.db #0x31	; 49	'1'
+      000059 31                     157 	.db #0x31	; 49	'1'
+      00005A 31                     158 	.db #0x31	; 49	'1'
+      00005B 30                     159 	.db #0x30	; 48	'0'
+      00005C 31                     160 	.db #0x31	; 49	'1'
+      00005D 30                     161 	.db #0x30	; 48	'0'
+      00005E 31                     162 	.db #0x31	; 49	'1'
+      00005F 30                     163 	.db #0x30	; 48	'0'
+      000060 31                     164 	.db #0x31	; 49	'1'
+      000061 00                     165 	.db 0x00
+      000062 31                     166 	.db #0x31	; 49	'1'
+      000063 31                     167 	.db #0x31	; 49	'1'
+      000064 31                     168 	.db #0x31	; 49	'1'
+      000065 31                     169 	.db #0x31	; 49	'1'
+      000066 30                     170 	.db #0x30	; 48	'0'
+      000067 30                     171 	.db #0x30	; 48	'0'
+      000068 30                     172 	.db #0x30	; 48	'0'
+      000069 30                     173 	.db #0x30	; 48	'0'
+      00006A 30                     174 	.db #0x30	; 48	'0'
+      00006B 31                     175 	.db #0x31	; 49	'1'
+      00006C 00                     176 	.db 0x00
+      00006D 31                     177 	.db #0x31	; 49	'1'
+      00006E 31                     178 	.db #0x31	; 49	'1'
+      00006F 31                     179 	.db #0x31	; 49	'1'
+      000070 31                     180 	.db #0x31	; 49	'1'
+      000071 31                     181 	.db #0x31	; 49	'1'
+      000072 31                     182 	.db #0x31	; 49	'1'
+      000073 31                     183 	.db #0x31	; 49	'1'
+      000074 31                     184 	.db #0x31	; 49	'1'
+      000075 31                     185 	.db #0x31	; 49	'1'
+      000076 31                     186 	.db #0x31	; 49	'1'
+      000077 00                     187 	.db 0x00
+      000078 31                     188 	.db #0x31	; 49	'1'
+      000079 31                     189 	.db #0x31	; 49	'1'
+      00007A 31                     190 	.db #0x31	; 49	'1'
+      00007B 31                     191 	.db #0x31	; 49	'1'
+      00007C 31                     192 	.db #0x31	; 49	'1'
+      00007D 31                     193 	.db #0x31	; 49	'1'
+      00007E 31                     194 	.db #0x31	; 49	'1'
+      00007F 31                     195 	.db #0x31	; 49	'1'
+      000080 31                     196 	.db #0x31	; 49	'1'
+      000081 31                     197 	.db #0x31	; 49	'1'
+      000082 00                     198 	.db 0x00
+      000083 00                     199 	.db 0x00
+      000084 00                     200 	.db 0x00
+      000085 00                     201 	.db 0x00
+      000086 00                     202 	.db 0x00
+      000087 00                     203 	.db 0x00
+      000088 00                     204 	.db 0x00
+      000089 00                     205 	.db 0x00
+      00008A 00                     206 	.db 0x00
+      00008B 00                     207 	.db 0x00
+      00008C 00                     208 	.db 0x00
+      00008D 00                     209 	.db 0x00
+                                    210 ;src\main.c:38: void printMap() {
+                                    211 ;	---------------------------------
+                                    212 ; Function printMap
+                                    213 ; ---------------------------------
+      00008E                        214 _printMap::
+                                    215 ;src\main.c:39: for (uint8_t y = 0; y < 11; y++)
+      00008E 0E 00            [ 8]  216 	ld	c, #0x00
+      000090                        217 00107$:
+      000090 79               [ 4]  218 	ld	a, c
+      000091 D6 0B            [ 8]  219 	sub	a, #0x0b
+      000093 D0               [20]  220 	ret	NC
+                                    221 ;src\main.c:41: for (uint8_t x = 0; x < 10; x++)
+      000094 06 00            [ 8]  222 	ld	b, #0x00
+      000096 69               [ 4]  223 	ld	l, c
+      000097 60               [ 4]  224 	ld	h, b
+      000098 29               [ 8]  225 	add	hl, hl
+      000099 29               [ 8]  226 	add	hl, hl
+      00009A 09               [ 8]  227 	add	hl, bc
+      00009B 29               [ 8]  228 	add	hl, hl
+      00009C 09               [ 8]  229 	add	hl, bc
+      00009D 7D               [ 4]  230 	ld	a, l
+      00009E C6r20            [ 8]  231 	add	a, #<(_map_collision)
+      0000A0 5F               [ 4]  232 	ld	e, a
+      0000A1 7C               [ 4]  233 	ld	a, h
+      0000A2 CEs00            [ 8]  234 	adc	a, #>(_map_collision)
+      0000A4 57               [ 4]  235 	ld	d, a
+      0000A5 06 00            [ 8]  236 	ld	b, #0x00
+      0000A7                        237 00104$:
+      0000A7 78               [ 4]  238 	ld	a, b
+      0000A8 D6 0A            [ 8]  239 	sub	a, #0x0a
+      0000AA 30 18            [12]  240 	jr	NC, 00101$
+                                    241 ;src\main.c:43: printf("%c ", map_collision[y][x]);
+      0000AC 68               [ 4]  242 	ld	l, b
+      0000AD 26 00            [ 8]  243 	ld	h, #0x00
+      0000AF 19               [ 8]  244 	add	hl, de
+      0000B0 6E               [ 8]  245 	ld	l, (hl)
+                                    246 ;	spillPairReg hl
+      0000B1 26 00            [ 8]  247 	ld	h, #0x00
+                                    248 ;	spillPairReg hl
+                                    249 ;	spillPairReg hl
+      0000B3 C5               [16]  250 	push	bc
+      0000B4 D5               [16]  251 	push	de
+      0000B5 E5               [16]  252 	push	hl
+      0000B6 21rCFr00         [12]  253 	ld	hl, #___str_0
+      0000B9 E5               [16]  254 	push	hl
+      0000BA CDr00r00         [24]  255 	call	_printf
+      0000BD E8 04            [16]  256 	add	sp, #4
+      0000BF D1               [12]  257 	pop	de
+      0000C0 C1               [12]  258 	pop	bc
+                                    259 ;src\main.c:41: for (uint8_t x = 0; x < 10; x++)
+      0000C1 04               [ 4]  260 	inc	b
+      0000C2 18 E3            [12]  261 	jr	00104$
+      0000C4                        262 00101$:
+                                    263 ;src\main.c:45: printf("\n\n");
+      0000C4 C5               [16]  264 	push	bc
+      0000C5 11rD3r00         [12]  265 	ld	de, #___str_2
+      0000C8 CDr00r00         [24]  266 	call	_puts
+      0000CB C1               [12]  267 	pop	bc
+                                    268 ;src\main.c:39: for (uint8_t y = 0; y < 11; y++)
+      0000CC 0C               [ 4]  269 	inc	c
+                                    270 ;src\main.c:47: }
+      0000CD 18 C1            [12]  271 	jr	00107$
+      0000CF                        272 ___str_0:
+      0000CF 25 63 20               273 	.ascii "%c "
+      0000D2 00                     274 	.db 0x00
+      0000D3                        275 ___str_2:
+      0000D3 0A                     276 	.db 0x0a
+      0000D4 00                     277 	.db 0x00
+                                    278 ;src\main.c:49: void init_gfx() {
+                                    279 ;	---------------------------------
+                                    280 ; Function init_gfx
+                                    281 ; ---------------------------------
+      0000D5                        282 _init_gfx::
+                                    283 ;src\main.c:51: set_bkg_data(0, 54u, TileLabel);
+      0000D5 11r00r00         [12]  284 	ld	de, #_TileLabel
+      0000D8 D5               [16]  285 	push	de
+      0000D9 21 00 36         [12]  286 	ld	hl, #0x3600
+      0000DC E5               [16]  287 	push	hl
+      0000DD CDr00r00         [24]  288 	call	_set_bkg_data
+      0000E0 E8 04            [16]  289 	add	sp, #4
+                                    290 ;src\main.c:52: set_bkg_tiles(0, 0, 20u, 18u, Visual_Map);
+      0000E2 11r00r00         [12]  291 	ld	de, #_Visual_Map
+      0000E5 D5               [16]  292 	push	de
+      0000E6 21 14 12         [12]  293 	ld	hl, #0x1214
+      0000E9 E5               [16]  294 	push	hl
+      0000EA AF               [ 4]  295 	xor	a, a
+      0000EB 0F               [ 4]  296 	rrca
+      0000EC F5               [16]  297 	push	af
+      0000ED CDr00r00         [24]  298 	call	_set_bkg_tiles
+      0000F0 E8 06            [16]  299 	add	sp, #6
+                                    300 ;src\main.c:55: SHOW_BKG;
+      0000F2 F0r00            [12]  301 	ldh	a, (_LCDC_REG + 0)
+      0000F4 F6 01            [ 8]  302 	or	a, #0x01
+      0000F6 E0r00            [12]  303 	ldh	(_LCDC_REG + 0), a
+                                    304 ;src\main.c:58: set_sprite_data(0, 45u, Cast_Tiles);
+      0000F8 11r00r00         [12]  305 	ld	de, #_Cast_Tiles
+      0000FB D5               [16]  306 	push	de
+      0000FC 21 00 2D         [12]  307 	ld	hl, #0x2d00
+      0000FF E5               [16]  308 	push	hl
+      000100 CDr00r00         [24]  309 	call	_set_sprite_data
+      000103 E8 04            [16]  310 	add	sp, #4
+                                    311 ;src\main.c:59: SHOW_SPRITES;
+      000105 F0r00            [12]  312 	ldh	a, (_LCDC_REG + 0)
+      000107 F6 02            [ 8]  313 	or	a, #0x02
+      000109 E0r00            [12]  314 	ldh	(_LCDC_REG + 0), a
+                                    315 ;src\main.c:60: }
+      00010B C9               [16]  316 	ret
+                                    317 ;src\main.c:62: void main(void)
+                                    318 ;	---------------------------------
+                                    319 ; Function main
+                                    320 ; ---------------------------------
+      00010C                        321 _main::
+      00010C E8 9C            [16]  322 	add	sp, #-100
+                                    323 ;src\main.c:64: struct player Tomato =
+      00010E F8 00            [12]  324 	ldhl	sp,	#0
+      000110 3E 04            [ 8]  325 	ld	a,#0x04
+      000112 22               [ 8]  326 	ld	(hl+),a
+      000113 22               [ 8]  327 	ld	(hl+), a
+      000114 3E 50            [ 8]  328 	ld	a, #0x50
+      000116 22               [ 8]  329 	ld	(hl+), a
+      000117 3E 58            [ 8]  330 	ld	a, #0x58
+      000119 22               [ 8]  331 	ld	(hl+), a
+      00011A AF               [ 4]  332 	xor	a, a
+      00011B 22               [ 8]  333 	ld	(hl+), a
+      00011C AF               [ 4]  334 	xor	a, a
+      00011D 22               [ 8]  335 	ld	(hl+), a
+      00011E 3E 03            [ 8]  336 	ld	a, #0x03
+      000120 22               [ 8]  337 	ld	(hl+), a
+      000121 AF               [ 4]  338 	xor	a, a
+      000122 22               [ 8]  339 	ld	(hl+), a
+      000123 AF               [ 4]  340 	xor	a, a
+      000124 22               [ 8]  341 	ld	(hl+), a
+                                    342 ;src\main.c:81: const metasprite_t player_down[] = {
+      000125 AF               [ 4]  343 	xor	a, a
+      000126 22               [ 8]  344 	ld	(hl+), a
+      000127 36 F8            [12]  345 	ld	(hl), #0xf8
+      000129 F8 0A            [12]  346 	ldhl	sp,	#10
+      00012B 4D               [ 4]  347 	ld	c, l
+      00012C 44               [ 4]  348 	ld	b, h
+      00012D F8 0B            [12]  349 	ldhl	sp,	#11
+      00012F 3E F8            [ 8]  350 	ld	a, #0xf8
+      000131 22               [ 8]  351 	ld	(hl+), a
+      000132 AF               [ 4]  352 	xor	a, a
+      000133 22               [ 8]  353 	ld	(hl+), a
+      000134 AF               [ 4]  354 	xor	a, a
+      000135 22               [ 8]  355 	ld	(hl+), a
+      000136 AF               [ 4]  356 	xor	a, a
+      000137 22               [ 8]  357 	ld	(hl+), a
+      000138 3E 08            [ 8]  358 	ld	a, #0x08
+      00013A 22               [ 8]  359 	ld	(hl+), a
+      00013B 3E 02            [ 8]  360 	ld	a, #0x02
+      00013D 22               [ 8]  361 	ld	(hl+), a
+      00013E AF               [ 4]  362 	xor	a, a
+      00013F 22               [ 8]  363 	ld	(hl+), a
+      000140 3E 08            [ 8]  364 	ld	a, #0x08
+      000142 22               [ 8]  365 	ld	(hl+), a
+      000143 3E F8            [ 8]  366 	ld	a, #0xf8
+      000145 22               [ 8]  367 	ld	(hl+), a
+      000146 3E 01            [ 8]  368 	ld	a, #0x01
+      000148 22               [ 8]  369 	ld	(hl+), a
+      000149 AF               [ 4]  370 	xor	a, a
+      00014A 22               [ 8]  371 	ld	(hl+), a
+      00014B AF               [ 4]  372 	xor	a, a
+      00014C 22               [ 8]  373 	ld	(hl+), a
+      00014D 3E 08            [ 8]  374 	ld	a, #0x08
+      00014F 22               [ 8]  375 	ld	(hl+), a
+      000150 3E 03            [ 8]  376 	ld	a, #0x03
+      000152 22               [ 8]  377 	ld	(hl+), a
+      000153 AF               [ 4]  378 	xor	a, a
+      000154 22               [ 8]  379 	ld	(hl+), a
+      000155 3E 80            [ 8]  380 	ld	a, #0x80
+      000157 22               [ 8]  381 	ld	(hl+), a
+      000158 AF               [ 4]  382 	xor	a, a
+      000159 22               [ 8]  383 	ld	(hl+), a
+      00015A AF               [ 4]  384 	xor	a, a
+      00015B 22               [ 8]  385 	ld	(hl+), a
+                                    386 ;src\main.c:88: const metasprite_t player_up[] = {
+      00015C AF               [ 4]  387 	xor	a, a
+      00015D 22               [ 8]  388 	ld	(hl+), a
+      00015E 3E F8            [ 8]  389 	ld	a,#0xf8
+      000160 22               [ 8]  390 	ld	(hl+),a
+      000161 22               [ 8]  391 	ld	(hl+), a
+      000162 3E 04            [ 8]  392 	ld	a, #0x04
+      000164 22               [ 8]  393 	ld	(hl+), a
+      000165 AF               [ 4]  394 	xor	a, a
+      000166 22               [ 8]  395 	ld	(hl+), a
+      000167 AF               [ 4]  396 	xor	a, a
+      000168 22               [ 8]  397 	ld	(hl+), a
+      000169 3E 08            [ 8]  398 	ld	a, #0x08
+      00016B 22               [ 8]  399 	ld	(hl+), a
+      00016C 3E 06            [ 8]  400 	ld	a, #0x06
+      00016E 22               [ 8]  401 	ld	(hl+), a
+      00016F AF               [ 4]  402 	xor	a, a
+      000170 22               [ 8]  403 	ld	(hl+), a
+      000171 3E 08            [ 8]  404 	ld	a, #0x08
+      000173 22               [ 8]  405 	ld	(hl+), a
+      000174 3E F8            [ 8]  406 	ld	a, #0xf8
+      000176 22               [ 8]  407 	ld	(hl+), a
+      000177 3E 05            [ 8]  408 	ld	a, #0x05
+      000179 22               [ 8]  409 	ld	(hl+), a
+      00017A AF               [ 4]  410 	xor	a, a
+      00017B 22               [ 8]  411 	ld	(hl+), a
+      00017C AF               [ 4]  412 	xor	a, a
+      00017D 22               [ 8]  413 	ld	(hl+), a
+      00017E 3E 08            [ 8]  414 	ld	a, #0x08
+      000180 22               [ 8]  415 	ld	(hl+), a
+      000181 3E 07            [ 8]  416 	ld	a, #0x07
+      000183 22               [ 8]  417 	ld	(hl+), a
+      000184 AF               [ 4]  418 	xor	a, a
+      000185 22               [ 8]  419 	ld	(hl+), a
+      000186 3E 80            [ 8]  420 	ld	a, #0x80
+      000188 22               [ 8]  421 	ld	(hl+), a
+      000189 AF               [ 4]  422 	xor	a, a
+      00018A 22               [ 8]  423 	ld	(hl+), a
+      00018B AF               [ 4]  424 	xor	a, a
+      00018C 22               [ 8]  425 	ld	(hl+), a
+                                    426 ;src\main.c:96: const metasprite_t player_right_0[] = {
+      00018D AF               [ 4]  427 	xor	a, a
+      00018E 22               [ 8]  428 	ld	(hl+), a
+      00018F 3E F8            [ 8]  429 	ld	a,#0xf8
+      000191 22               [ 8]  430 	ld	(hl+),a
+      000192 22               [ 8]  431 	ld	(hl+), a
+      000193 3E 08            [ 8]  432 	ld	a, #0x08
+      000195 22               [ 8]  433 	ld	(hl+), a
+      000196 AF               [ 4]  434 	xor	a, a
+      000197 22               [ 8]  435 	ld	(hl+), a
+      000198 AF               [ 4]  436 	xor	a, a
+      000199 22               [ 8]  437 	ld	(hl+), a
+      00019A 3E 08            [ 8]  438 	ld	a, #0x08
+      00019C 22               [ 8]  439 	ld	(hl+), a
+      00019D 3E 0A            [ 8]  440 	ld	a, #0x0a
+      00019F 22               [ 8]  441 	ld	(hl+), a
+      0001A0 AF               [ 4]  442 	xor	a, a
+      0001A1 22               [ 8]  443 	ld	(hl+), a
+      0001A2 3E 08            [ 8]  444 	ld	a, #0x08
+      0001A4 22               [ 8]  445 	ld	(hl+), a
+      0001A5 3E F8            [ 8]  446 	ld	a, #0xf8
+      0001A7 22               [ 8]  447 	ld	(hl+), a
+      0001A8 3E 09            [ 8]  448 	ld	a, #0x09
+      0001AA 22               [ 8]  449 	ld	(hl+), a
+      0001AB AF               [ 4]  450 	xor	a, a
+      0001AC 22               [ 8]  451 	ld	(hl+), a
+      0001AD AF               [ 4]  452 	xor	a, a
+      0001AE 22               [ 8]  453 	ld	(hl+), a
+      0001AF 3E 08            [ 8]  454 	ld	a, #0x08
+      0001B1 22               [ 8]  455 	ld	(hl+), a
+      0001B2 3E 0B            [ 8]  456 	ld	a, #0x0b
+      0001B4 22               [ 8]  457 	ld	(hl+), a
+      0001B5 AF               [ 4]  458 	xor	a, a
+      0001B6 22               [ 8]  459 	ld	(hl+), a
+      0001B7 3E 80            [ 8]  460 	ld	a, #0x80
+      0001B9 22               [ 8]  461 	ld	(hl+), a
+      0001BA AF               [ 4]  462 	xor	a, a
+      0001BB 22               [ 8]  463 	ld	(hl+), a
+      0001BC AF               [ 4]  464 	xor	a, a
+      0001BD 22               [ 8]  465 	ld	(hl+), a
+                                    466 ;src\main.c:103: const metasprite_t player_right_1[] = {
+      0001BE AF               [ 4]  467 	xor	a, a
+      0001BF 22               [ 8]  468 	ld	(hl+), a
+      0001C0 3E F8            [ 8]  469 	ld	a,#0xf8
+      0001C2 22               [ 8]  470 	ld	(hl+),a
+      0001C3 22               [ 8]  471 	ld	(hl+), a
+      0001C4 3E 0C            [ 8]  472 	ld	a, #0x0c
+      0001C6 22               [ 8]  473 	ld	(hl+), a
+      0001C7 AF               [ 4]  474 	xor	a, a
+      0001C8 22               [ 8]  475 	ld	(hl+), a
+      0001C9 AF               [ 4]  476 	xor	a, a
+      0001CA 22               [ 8]  477 	ld	(hl+), a
+      0001CB 3E 08            [ 8]  478 	ld	a, #0x08
+      0001CD 22               [ 8]  479 	ld	(hl+), a
+      0001CE 3E 0E            [ 8]  480 	ld	a, #0x0e
+      0001D0 22               [ 8]  481 	ld	(hl+), a
+      0001D1 AF               [ 4]  482 	xor	a, a
+      0001D2 22               [ 8]  483 	ld	(hl+), a
+      0001D3 3E 08            [ 8]  484 	ld	a, #0x08
+      0001D5 22               [ 8]  485 	ld	(hl+), a
+      0001D6 3E F8            [ 8]  486 	ld	a, #0xf8
+      0001D8 22               [ 8]  487 	ld	(hl+), a
+      0001D9 3E 0D            [ 8]  488 	ld	a, #0x0d
+      0001DB 22               [ 8]  489 	ld	(hl+), a
+      0001DC AF               [ 4]  490 	xor	a, a
+      0001DD 22               [ 8]  491 	ld	(hl+), a
+      0001DE AF               [ 4]  492 	xor	a, a
+      0001DF 22               [ 8]  493 	ld	(hl+), a
+      0001E0 3E 08            [ 8]  494 	ld	a, #0x08
+      0001E2 22               [ 8]  495 	ld	(hl+), a
+      0001E3 3E 0F            [ 8]  496 	ld	a, #0x0f
+      0001E5 22               [ 8]  497 	ld	(hl+), a
+      0001E6 AF               [ 4]  498 	xor	a, a
+      0001E7 22               [ 8]  499 	ld	(hl+), a
+      0001E8 3E 80            [ 8]  500 	ld	a, #0x80
+      0001EA 22               [ 8]  501 	ld	(hl+), a
+      0001EB AF               [ 4]  502 	xor	a, a
+      0001EC 22               [ 8]  503 	ld	(hl+), a
+      0001ED AF               [ 4]  504 	xor	a, a
+      0001EE 22               [ 8]  505 	ld	(hl+), a
+                                    506 ;src\main.c:111: const metasprite_t* const player_metasprites[4] = {
+      0001EF AF               [ 4]  507 	xor	a, a
+      0001F0 22               [ 8]  508 	ld	(hl+), a
+      0001F1 79               [ 4]  509 	ld	a, c
+      0001F2 22               [ 8]  510 	ld	(hl+), a
+      0001F3 70               [ 8]  511 	ld	(hl), b
+      0001F4 21 1E 00         [12]  512 	ld	hl, #30
+      0001F7 39               [ 8]  513 	add	hl, sp
+      0001F8 4D               [ 4]  514 	ld	c, l
+      0001F9 44               [ 4]  515 	ld	b, h
+      0001FA F8 5C            [12]  516 	ldhl	sp,	#92
+      0001FC 79               [ 4]  517 	ld	a, c
+      0001FD 22               [ 8]  518 	ld	(hl+), a
+      0001FE 70               [ 8]  519 	ld	(hl), b
+      0001FF 21 32 00         [12]  520 	ld	hl, #50
+      000202 39               [ 8]  521 	add	hl, sp
+      000203 4D               [ 4]  522 	ld	c, l
+      000204 44               [ 4]  523 	ld	b, h
+      000205 F8 5E            [12]  524 	ldhl	sp,	#94
+      000207 79               [ 4]  525 	ld	a, c
+      000208 22               [ 8]  526 	ld	(hl+), a
+      000209 70               [ 8]  527 	ld	(hl), b
+      00020A 21 46 00         [12]  528 	ld	hl, #70
+      00020D 39               [ 8]  529 	add	hl, sp
+      00020E 4D               [ 4]  530 	ld	c, l
+      00020F 44               [ 4]  531 	ld	b, h
+      000210 F8 60            [12]  532 	ldhl	sp,	#96
+      000212 79               [ 4]  533 	ld	a, c
+      000213 22               [ 8]  534 	ld	(hl+), a
+      000214 70               [ 8]  535 	ld	(hl), b
+                                    536 ;src\main.c:115: init_gfx();
+      000215 CDrD5r00         [24]  537 	call	_init_gfx
+                                    538 ;src\main.c:116: volatile uint8_t timer = 0;
+      000218 F8 62            [12]  539 	ldhl	sp,	#98
+      00021A 36 00            [12]  540 	ld	(hl), #0x00
+                                    541 ;src\main.c:117: move_metasprite(player_metasprites[0], 0, 0, 80, 88);
+      00021C F8 5A            [12]  542 	ldhl	sp,	#90
+      00021E 2A               [ 8]  543 	ld	a, (hl+)
+      00021F 4F               [ 4]  544 	ld	c, a
+      000220 7E               [ 8]  545 	ld	a, (hl)
+                                    546 ;C:/gbdk/include/gb/metasprites.h:140: __current_metasprite = metasprite;
+      000221 21r00r00         [12]  547 	ld	hl, #___current_metasprite
+      000224 71               [ 8]  548 	ld	(hl), c
+      000225 23               [ 8]  549 	inc	hl
+      000226 77               [ 8]  550 	ld	(hl), a
+                                    551 ;C:/gbdk/include/gb/metasprites.h:141: __current_base_tile = base_tile;
+      000227 21r00r00         [12]  552 	ld	hl, #___current_base_tile
+      00022A 36 00            [12]  553 	ld	(hl), #0x00
+                                    554 ;C:/gbdk/include/gb/metasprites.h:142: return __move_metasprite(base_sprite, x, y);
+      00022C 21 50 58         [12]  555 	ld	hl, #0x5850
+      00022F E5               [16]  556 	push	hl
+      000230 AF               [ 4]  557 	xor	a, a
+      000231 F5               [16]  558 	push	af
+      000232 33               [ 8]  559 	inc	sp
+      000233 CDr00r00         [24]  560 	call	___move_metasprite
+      000236 E8 03            [16]  561 	add	sp, #3
+                                    562 ;src\main.c:120: while(1) {
+      000238                        563 00143$:
+                                    564 ;src\main.c:121: joy = joypad();
+      000238 CDr00r00         [24]  565 	call	_joypad
+      00023B EAr00r00         [16]  566 	ld	(#_joy),a
+                                    567 ;src\main.c:122: timer++;
+      00023E F8 62            [12]  568 	ldhl	sp,	#98
+      000240 34               [12]  569 	inc	(hl)
+      000241 7E               [ 8]  570 	ld	a, (hl)
+                                    571 ;src\main.c:124: switch (Tomato.state) 
+      000242 F8 07            [12]  572 	ldhl	sp,	#7
+      000244 4E               [ 8]  573 	ld	c, (hl)
+      000245 3E 04            [ 8]  574 	ld	a, #0x04
+      000247 91               [ 4]  575 	sub	a, c
+      000248 DAr85r04         [16]  576 	jp	C, 00141$
+      00024B 06 00            [ 8]  577 	ld	b, #0x00
+      00024D 21r54r02         [12]  578 	ld	hl, #00226$
+      000250 09               [ 8]  579 	add	hl, bc
+      000251 09               [ 8]  580 	add	hl, bc
+      000252 09               [ 8]  581 	add	hl, bc
+      000253 E9               [ 4]  582 	jp	(hl)
+      000254                        583 00226$:
+      000254 C3r63r02         [16]  584 	jp	00101$
+      000257 C3rDAr03         [16]  585 	jp	00129$
+      00025A C3rA0r03         [16]  586 	jp	00125$
+      00025D C3r4Er04         [16]  587 	jp	00137$
+      000260 C3r16r04         [16]  588 	jp	00133$
+                                    589 ;src\main.c:126: case idle:
+      000263                        590 00101$:
+                                    591 ;src\main.c:128: if (joy & J_UP)
+      000263 FAr00r00         [16]  592 	ld	a, (#_joy)
+      000266 CB 57            [ 8]  593 	bit	2, a
+      000268 28 4C            [12]  594 	jr	Z, 00123$
+                                    595 ;src\main.c:130: if (check_map(Tomato.local_x, Tomato.local_y - 1) == '0')
+      00026A F8 01            [12]  596 	ldhl	sp,	#1
+      00026C 3A               [ 8]  597 	ld	a, (hl-)
+      00026D 4F               [ 4]  598 	ld	c, a
+      00026E 0D               [ 4]  599 	dec	c
+      00026F 46               [ 8]  600 	ld	b, (hl)
+      000270 59               [ 4]  601 	ld	e, c
+      000271 78               [ 4]  602 	ld	a, b
+      000272 CDr0Cr00         [24]  603 	call	_check_map
+      000275 D6 30            [ 8]  604 	sub	a, #0x30
+      000277 20 11            [12]  605 	jr	NZ, 00103$
+                                    606 ;src\main.c:132: Tomato.local_y -= 1;
+      000279 F8 01            [12]  607 	ldhl	sp,	#1
+      00027B 7E               [ 8]  608 	ld	a, (hl)
+      00027C 3D               [ 4]  609 	dec	a
+                                    610 ;src\main.c:133: Tomato.goal_y = Tomato.sprite_y - 16;
+      00027D 22               [ 8]  611 	ld	(hl+), a
+      00027E 23               [ 8]  612 	inc	hl
+      00027F 2A               [ 8]  613 	ld	a, (hl+)
+      000280 23               [ 8]  614 	inc	hl
+      000281 C6 F0            [ 8]  615 	add	a, #0xf0
+                                    616 ;src\main.c:134: Tomato.state = up;
+      000283 22               [ 8]  617 	ld	(hl+), a
+      000284 23               [ 8]  618 	inc	hl
+      000285 36 03            [12]  619 	ld	(hl), #0x03
+      000287 C3r85r04         [16]  620 	jp	00141$
+      00028A                        621 00103$:
+                                    622 ;src\main.c:138: move_metasprite(player_metasprites[1], 0, 0, Tomato.sprite_x, Tomato.sprite_y);
+      00028A F8 03            [12]  623 	ldhl	sp,	#3
+      00028C 3A               [ 8]  624 	ld	a, (hl-)
+      00028D 4F               [ 4]  625 	ld	c, a
+      00028E 7E               [ 8]  626 	ld	a, (hl)
+      00028F F8 63            [12]  627 	ldhl	sp,	#99
+      000291 77               [ 8]  628 	ld	(hl), a
+      000292 F8 5C            [12]  629 	ldhl	sp,	#92
+      000294 2A               [ 8]  630 	ld	a, (hl+)
+      000295 66               [ 8]  631 	ld	h, (hl)
+                                    632 ;	spillPairReg hl
+                                    633 ;	spillPairReg hl
+                                    634 ;	spillPairReg hl
+                                    635 ;	spillPairReg hl
+                                    636 ;C:/gbdk/include/gb/metasprites.h:140: __current_metasprite = metasprite;
+      000296 5F               [ 4]  637 	ld	e, a
+      000297 54               [ 4]  638 	ld	d, h
+      000298 21r00r00         [12]  639 	ld	hl, #___current_metasprite
+      00029B 7B               [ 4]  640 	ld	a, e
+      00029C 22               [ 8]  641 	ld	(hl+), a
+      00029D 72               [ 8]  642 	ld	(hl), d
+                                    643 ;C:/gbdk/include/gb/metasprites.h:141: __current_base_tile = base_tile;
+      00029E 21r00r00         [12]  644 	ld	hl, #___current_base_tile
+      0002A1 36 00            [12]  645 	ld	(hl), #0x00
+                                    646 ;C:/gbdk/include/gb/metasprites.h:142: return __move_metasprite(base_sprite, x, y);
+      0002A3 79               [ 4]  647 	ld	a, c
+      0002A4 F5               [16]  648 	push	af
+      0002A5 33               [ 8]  649 	inc	sp
+      0002A6 F8 64            [12]  650 	ldhl	sp,	#100
+      0002A8 7E               [ 8]  651 	ld	a, (hl)
+      0002A9 F5               [16]  652 	push	af
+      0002AA 33               [ 8]  653 	inc	sp
+      0002AB AF               [ 4]  654 	xor	a, a
+      0002AC F5               [16]  655 	push	af
+      0002AD 33               [ 8]  656 	inc	sp
+      0002AE CDr00r00         [24]  657 	call	___move_metasprite
+      0002B1 E8 03            [16]  658 	add	sp, #3
+                                    659 ;src\main.c:138: move_metasprite(player_metasprites[1], 0, 0, Tomato.sprite_x, Tomato.sprite_y);
+      0002B3 C3r85r04         [16]  660 	jp	00141$
+      0002B6                        661 00123$:
+                                    662 ;src\main.c:141: else if (joy & J_DOWN)
+      0002B6 CB 5F            [ 8]  663 	bit	3, a
+      0002B8 28 4C            [12]  664 	jr	Z, 00120$
+                                    665 ;src\main.c:143: if (check_map(Tomato.local_x, Tomato.local_y + 1) == '0')
+      0002BA F8 01            [12]  666 	ldhl	sp,	#1
+      0002BC 3A               [ 8]  667 	ld	a, (hl-)
+      0002BD 4F               [ 4]  668 	ld	c, a
+      0002BE 0C               [ 4]  669 	inc	c
+      0002BF 46               [ 8]  670 	ld	b, (hl)
+      0002C0 59               [ 4]  671 	ld	e, c
+      0002C1 78               [ 4]  672 	ld	a, b
+      0002C2 CDr0Cr00         [24]  673 	call	_check_map
+      0002C5 D6 30            [ 8]  674 	sub	a, #0x30
+      0002C7 20 11            [12]  675 	jr	NZ, 00106$
+                                    676 ;src\main.c:145: Tomato.local_y += 1;
+      0002C9 F8 01            [12]  677 	ldhl	sp,	#1
+      0002CB 7E               [ 8]  678 	ld	a, (hl)
+      0002CC 3C               [ 4]  679 	inc	a
+                                    680 ;src\main.c:146: Tomato.goal_y = Tomato.sprite_y + 16;
+      0002CD 22               [ 8]  681 	ld	(hl+), a
+      0002CE 23               [ 8]  682 	inc	hl
+      0002CF 2A               [ 8]  683 	ld	a, (hl+)
+      0002D0 23               [ 8]  684 	inc	hl
+      0002D1 C6 10            [ 8]  685 	add	a, #0x10
+                                    686 ;src\main.c:147: Tomato.state = down;
+      0002D3 22               [ 8]  687 	ld	(hl+), a
+      0002D4 23               [ 8]  688 	inc	hl
+      0002D5 36 04            [12]  689 	ld	(hl), #0x04
+      0002D7 C3r85r04         [16]  690 	jp	00141$
+      0002DA                        691 00106$:
+                                    692 ;src\main.c:151: move_metasprite(player_metasprites[0], 0, 0, Tomato.sprite_x, Tomato.sprite_y);
+      0002DA F8 03            [12]  693 	ldhl	sp,	#3
+      0002DC 3A               [ 8]  694 	ld	a, (hl-)
+      0002DD 4F               [ 4]  695 	ld	c, a
+      0002DE 7E               [ 8]  696 	ld	a, (hl)
+      0002DF F8 63            [12]  697 	ldhl	sp,	#99
+      0002E1 77               [ 8]  698 	ld	(hl), a
+      0002E2 F8 5A            [12]  699 	ldhl	sp,	#90
+      0002E4 2A               [ 8]  700 	ld	a, (hl+)
+      0002E5 66               [ 8]  701 	ld	h, (hl)
+                                    702 ;	spillPairReg hl
+                                    703 ;	spillPairReg hl
+                                    704 ;	spillPairReg hl
+                                    705 ;	spillPairReg hl
+                                    706 ;C:/gbdk/include/gb/metasprites.h:140: __current_metasprite = metasprite;
+      0002E6 5F               [ 4]  707 	ld	e, a
+      0002E7 54               [ 4]  708 	ld	d, h
+      0002E8 21r00r00         [12]  709 	ld	hl, #___current_metasprite
+      0002EB 7B               [ 4]  710 	ld	a, e
+      0002EC 22               [ 8]  711 	ld	(hl+), a
+      0002ED 72               [ 8]  712 	ld	(hl), d
+                                    713 ;C:/gbdk/include/gb/metasprites.h:141: __current_base_tile = base_tile;
+      0002EE 21r00r00         [12]  714 	ld	hl, #___current_base_tile
+      0002F1 36 00            [12]  715 	ld	(hl), #0x00
+                                    716 ;C:/gbdk/include/gb/metasprites.h:142: return __move_metasprite(base_sprite, x, y);
+      0002F3 79               [ 4]  717 	ld	a, c
+      0002F4 F5               [16]  718 	push	af
+      0002F5 33               [ 8]  719 	inc	sp
+      0002F6 F8 64            [12]  720 	ldhl	sp,	#100
+      0002F8 7E               [ 8]  721 	ld	a, (hl)
+      0002F9 F5               [16]  722 	push	af
+      0002FA 33               [ 8]  723 	inc	sp
+      0002FB AF               [ 4]  724 	xor	a, a
+      0002FC F5               [16]  725 	push	af
+      0002FD 33               [ 8]  726 	inc	sp
+      0002FE CDr00r00         [24]  727 	call	___move_metasprite
+      000301 E8 03            [16]  728 	add	sp, #3
+                                    729 ;src\main.c:151: move_metasprite(player_metasprites[0], 0, 0, Tomato.sprite_x, Tomato.sprite_y);
+      000303 C3r85r04         [16]  730 	jp	00141$
+      000306                        731 00120$:
+                                    732 ;src\main.c:154: else if (joy & J_LEFT)
+      000306 CB 4F            [ 8]  733 	bit	1, a
+      000308 28 4F            [12]  734 	jr	Z, 00117$
+                                    735 ;src\main.c:156: if (check_map(Tomato.local_x - 1, Tomato.local_y) == '0')
+      00030A F8 01            [12]  736 	ldhl	sp,	#1
+      00030C 3A               [ 8]  737 	ld	a, (hl-)
+      00030D 47               [ 4]  738 	ld	b, a
+      00030E 4E               [ 8]  739 	ld	c, (hl)
+      00030F 0D               [ 4]  740 	dec	c
+      000310 58               [ 4]  741 	ld	e, b
+      000311 79               [ 4]  742 	ld	a, c
+      000312 CDr0Cr00         [24]  743 	call	_check_map
+      000315 D6 30            [ 8]  744 	sub	a, #0x30
+      000317 20 12            [12]  745 	jr	NZ, 00109$
+                                    746 ;src\main.c:158: Tomato.local_x -= 1;
+      000319 F8 00            [12]  747 	ldhl	sp,	#0
+      00031B 7E               [ 8]  748 	ld	a, (hl)
+      00031C 3D               [ 4]  749 	dec	a
+                                    750 ;src\main.c:159: Tomato.goal_x = Tomato.sprite_x - 16;
+      00031D 22               [ 8]  751 	ld	(hl+), a
+      00031E 23               [ 8]  752 	inc	hl
+      00031F 2A               [ 8]  753 	ld	a, (hl+)
+      000320 23               [ 8]  754 	inc	hl
+      000321 C6 F0            [ 8]  755 	add	a, #0xf0
+      000323 77               [ 8]  756 	ld	(hl), a
+                                    757 ;src\main.c:160: Tomato.state = left;
+      000324 F8 07            [12]  758 	ldhl	sp,	#7
+      000326 36 01            [12]  759 	ld	(hl), #0x01
+      000328 C3r85r04         [16]  760 	jp	00141$
+      00032B                        761 00109$:
+                                    762 ;src\main.c:164: move_metasprite_vflip(player_metasprites[3], 0, 0, Tomato.sprite_x, Tomato.sprite_y);
+      00032B F8 03            [12]  763 	ldhl	sp,	#3
+      00032D 3A               [ 8]  764 	ld	a, (hl-)
+      00032E 4F               [ 4]  765 	ld	c, a
+      00032F 7E               [ 8]  766 	ld	a, (hl)
+      000330 F8 63            [12]  767 	ldhl	sp,	#99
+      000332 77               [ 8]  768 	ld	(hl), a
+      000333 F8 60            [12]  769 	ldhl	sp,	#96
+      000335 2A               [ 8]  770 	ld	a, (hl+)
+      000336 66               [ 8]  771 	ld	h, (hl)
+                                    772 ;	spillPairReg hl
+                                    773 ;	spillPairReg hl
+                                    774 ;	spillPairReg hl
+                                    775 ;	spillPairReg hl
+                                    776 ;C:/gbdk/include/gb/metasprites.h:169: __current_metasprite = metasprite;
+      000337 5F               [ 4]  777 	ld	e, a
+      000338 54               [ 4]  778 	ld	d, h
+      000339 21r00r00         [12]  779 	ld	hl, #___current_metasprite
+      00033C 7B               [ 4]  780 	ld	a, e
+      00033D 22               [ 8]  781 	ld	(hl+), a
+      00033E 72               [ 8]  782 	ld	(hl), d
+                                    783 ;C:/gbdk/include/gb/metasprites.h:170: __current_base_tile = base_tile;
+      00033F 21r00r00         [12]  784 	ld	hl, #___current_base_tile
+      000342 36 00            [12]  785 	ld	(hl), #0x00
+                                    786 ;C:/gbdk/include/gb/metasprites.h:171: return __move_metasprite_vflip(base_sprite, x - 8, y);
+      000344 F8 63            [12]  787 	ldhl	sp,	#99
+      000346 7E               [ 8]  788 	ld	a, (hl)
+      000347 C6 F8            [ 8]  789 	add	a, #0xf8
+      000349 61               [ 4]  790 	ld	h, c
+                                    791 ;	spillPairReg hl
+                                    792 ;	spillPairReg hl
+      00034A E5               [16]  793 	push	hl
+      00034B 33               [ 8]  794 	inc	sp
+      00034C F5               [16]  795 	push	af
+      00034D 33               [ 8]  796 	inc	sp
+      00034E AF               [ 4]  797 	xor	a, a
+      00034F F5               [16]  798 	push	af
+      000350 33               [ 8]  799 	inc	sp
+      000351 CDr00r00         [24]  800 	call	___move_metasprite_vflip
+      000354 E8 03            [16]  801 	add	sp, #3
+                                    802 ;src\main.c:164: move_metasprite_vflip(player_metasprites[3], 0, 0, Tomato.sprite_x, Tomato.sprite_y);
+      000356 C3r85r04         [16]  803 	jp	00141$
+      000359                        804 00117$:
+                                    805 ;src\main.c:167: else if (joy  & J_RIGHT)
+      000359 0F               [ 4]  806 	rrca
+      00035A D2r85r04         [16]  807 	jp	NC,00141$
+                                    808 ;src\main.c:169: if (check_map(Tomato.local_x + 1, Tomato.local_y) == '0')
+      00035D F8 01            [12]  809 	ldhl	sp,	#1
+      00035F 3A               [ 8]  810 	ld	a, (hl-)
+      000360 47               [ 4]  811 	ld	b, a
+      000361 4E               [ 8]  812 	ld	c, (hl)
+      000362 0C               [ 4]  813 	inc	c
+      000363 58               [ 4]  814 	ld	e, b
+      000364 79               [ 4]  815 	ld	a, c
+      000365 CDr0Cr00         [24]  816 	call	_check_map
+      000368 D6 30            [ 8]  817 	sub	a, #0x30
+      00036A 20 12            [12]  818 	jr	NZ, 00112$
+                                    819 ;src\main.c:171: Tomato.local_x += 1;
+      00036C F8 00            [12]  820 	ldhl	sp,	#0
+      00036E 7E               [ 8]  821 	ld	a, (hl)
+      00036F 3C               [ 4]  822 	inc	a
+                                    823 ;src\main.c:172: Tomato.goal_x = Tomato.sprite_x + 16;
+      000370 22               [ 8]  824 	ld	(hl+), a
+      000371 23               [ 8]  825 	inc	hl
+      000372 2A               [ 8]  826 	ld	a, (hl+)
+      000373 23               [ 8]  827 	inc	hl
+      000374 C6 10            [ 8]  828 	add	a, #0x10
+      000376 77               [ 8]  829 	ld	(hl), a
+                                    830 ;src\main.c:173: Tomato.state = right;
+      000377 F8 07            [12]  831 	ldhl	sp,	#7
+      000379 36 02            [12]  832 	ld	(hl), #0x02
+      00037B C3r85r04         [16]  833 	jp	00141$
+      00037E                        834 00112$:
+                                    835 ;src\main.c:177: move_metasprite(player_metasprites[2], 0, 0, Tomato.sprite_x, Tomato.sprite_y);
+      00037E F8 03            [12]  836 	ldhl	sp,	#3
+      000380 3A               [ 8]  837 	ld	a, (hl-)
+      000381 47               [ 4]  838 	ld	b, a
+      000382 4E               [ 8]  839 	ld	c, (hl)
+      000383 F8 5E            [12]  840 	ldhl	sp,	#94
+      000385 2A               [ 8]  841 	ld	a, (hl+)
+      000386 66               [ 8]  842 	ld	h, (hl)
+                                    843 ;	spillPairReg hl
+                                    844 ;	spillPairReg hl
+                                    845 ;	spillPairReg hl
+                                    846 ;	spillPairReg hl
+                                    847 ;C:/gbdk/include/gb/metasprites.h:140: __current_metasprite = metasprite;
+      000387 5F               [ 4]  848 	ld	e, a
+      000388 54               [ 4]  849 	ld	d, h
+      000389 21r00r00         [12]  850 	ld	hl, #___current_metasprite
+      00038C 7B               [ 4]  851 	ld	a, e
+      00038D 22               [ 8]  852 	ld	(hl+), a
+      00038E 72               [ 8]  853 	ld	(hl), d
+                                    854 ;C:/gbdk/include/gb/metasprites.h:141: __current_base_tile = base_tile;
+      00038F 21r00r00         [12]  855 	ld	hl, #___current_base_tile
+      000392 36 00            [12]  856 	ld	(hl), #0x00
+                                    857 ;C:/gbdk/include/gb/metasprites.h:142: return __move_metasprite(base_sprite, x, y);
+      000394 C5               [16]  858 	push	bc
+      000395 AF               [ 4]  859 	xor	a, a
+      000396 F5               [16]  860 	push	af
+      000397 33               [ 8]  861 	inc	sp
+      000398 CDr00r00         [24]  862 	call	___move_metasprite
+      00039B E8 03            [16]  863 	add	sp, #3
+                                    864 ;src\main.c:180: break;
+      00039D C3r85r04         [16]  865 	jp	00141$
+                                    866 ;src\main.c:181: case right:
+      0003A0                        867 00125$:
+                                    868 ;src\main.c:138: move_metasprite(player_metasprites[1], 0, 0, Tomato.sprite_x, Tomato.sprite_y);
+      0003A0 F8 02            [12]  869 	ldhl	sp,	#2
+                                    870 ;src\main.c:182: if (Tomato.sprite_x < Tomato.goal_x)
+      0003A2 2A               [ 8]  871 	ld	a, (hl+)
+      0003A3 23               [ 8]  872 	inc	hl
+      0003A4 4E               [ 8]  873 	ld	c, (hl)
+      0003A5 B9               [ 4]  874 	cp	a, c
+      0003A6 30 2B            [12]  875 	jr	NC, 00127$
+                                    876 ;src\main.c:184: Tomato.sprite_x++;
+      0003A8 2B               [ 8]  877 	dec	hl
+      0003A9 2B               [ 8]  878 	dec	hl
+      0003AA 3C               [ 4]  879 	inc	a
+                                    880 ;src\main.c:185: move_metasprite(player_metasprites[2], 0, 0, Tomato.sprite_x, Tomato.sprite_y);
+      0003AB 22               [ 8]  881 	ld	(hl+), a
+      0003AC 46               [ 8]  882 	ld	b, (hl)
+      0003AD 4F               [ 4]  883 	ld	c, a
+      0003AE F8 5E            [12]  884 	ldhl	sp,	#94
+      0003B0 2A               [ 8]  885 	ld	a, (hl+)
+      0003B1 66               [ 8]  886 	ld	h, (hl)
+                                    887 ;	spillPairReg hl
+                                    888 ;	spillPairReg hl
+                                    889 ;	spillPairReg hl
+                                    890 ;	spillPairReg hl
+                                    891 ;C:/gbdk/include/gb/metasprites.h:140: __current_metasprite = metasprite;
+      0003B2 5F               [ 4]  892 	ld	e, a
+      0003B3 54               [ 4]  893 	ld	d, h
+      0003B4 21r00r00         [12]  894 	ld	hl, #___current_metasprite
+      0003B7 7B               [ 4]  895 	ld	a, e
+      0003B8 22               [ 8]  896 	ld	(hl+), a
+      0003B9 72               [ 8]  897 	ld	(hl), d
+                                    898 ;C:/gbdk/include/gb/metasprites.h:141: __current_base_tile = base_tile;
+      0003BA 21r00r00         [12]  899 	ld	hl, #___current_base_tile
+      0003BD 36 00            [12]  900 	ld	(hl), #0x00
+                                    901 ;C:/gbdk/include/gb/metasprites.h:142: return __move_metasprite(base_sprite, x, y);
+      0003BF C5               [16]  902 	push	bc
+      0003C0 33               [ 8]  903 	inc	sp
+      0003C1 61               [ 4]  904 	ld	h, c
+      0003C2 2E 00            [ 8]  905 	ld	l, #0x00
+      0003C4 E5               [16]  906 	push	hl
+      0003C5 CDr00r00         [24]  907 	call	___move_metasprite
+      0003C8 E8 03            [16]  908 	add	sp, #3
+                                    909 ;src\main.c:186: performantdelay(Tomato.speed); // speed variable magic number
+      0003CA F8 06            [12]  910 	ldhl	sp,	#6
+      0003CC 7E               [ 8]  911 	ld	a, (hl)
+      0003CD CDr00r00         [24]  912 	call	_performantdelay
+      0003D0 C3r85r04         [16]  913 	jp	00141$
+      0003D3                        914 00127$:
+                                    915 ;src\main.c:190: Tomato.state = idle;
+      0003D3 F8 07            [12]  916 	ldhl	sp,	#7
+      0003D5 36 00            [12]  917 	ld	(hl), #0x00
+                                    918 ;src\main.c:192: break;
+      0003D7 C3r85r04         [16]  919 	jp	00141$
+                                    920 ;src\main.c:193: case left:
+      0003DA                        921 00129$:
+                                    922 ;src\main.c:138: move_metasprite(player_metasprites[1], 0, 0, Tomato.sprite_x, Tomato.sprite_y);
+      0003DA F8 02            [12]  923 	ldhl	sp,	#2
+                                    924 ;src\main.c:194: if (Tomato.sprite_x > Tomato.goal_x)
+      0003DC 2A               [ 8]  925 	ld	a, (hl+)
+      0003DD 23               [ 8]  926 	inc	hl
+      0003DE 4F               [ 4]  927 	ld	c, a
+      0003DF 7E               [ 8]  928 	ld	a, (hl)
+      0003E0 91               [ 4]  929 	sub	a, c
+      0003E1 30 2D            [12]  930 	jr	NC, 00131$
+                                    931 ;src\main.c:196: Tomato.sprite_x--;
+      0003E3 2B               [ 8]  932 	dec	hl
+      0003E4 2B               [ 8]  933 	dec	hl
+      0003E5 0D               [ 4]  934 	dec	c
+                                    935 ;src\main.c:197: move_metasprite_vflip(player_metasprites[3], 0, 0, Tomato.sprite_x, Tomato.sprite_y);
+      0003E6 79               [ 4]  936 	ld	a, c
+      0003E7 22               [ 8]  937 	ld	(hl+), a
+      0003E8 46               [ 8]  938 	ld	b, (hl)
+      0003E9 F8 60            [12]  939 	ldhl	sp,	#96
+      0003EB 2A               [ 8]  940 	ld	a, (hl+)
+      0003EC 66               [ 8]  941 	ld	h, (hl)
+                                    942 ;	spillPairReg hl
+                                    943 ;	spillPairReg hl
+                                    944 ;	spillPairReg hl
+                                    945 ;	spillPairReg hl
+                                    946 ;C:/gbdk/include/gb/metasprites.h:169: __current_metasprite = metasprite;
+      0003ED 5F               [ 4]  947 	ld	e, a
+      0003EE 54               [ 4]  948 	ld	d, h
+      0003EF 21r00r00         [12]  949 	ld	hl, #___current_metasprite
+      0003F2 7B               [ 4]  950 	ld	a, e
+      0003F3 22               [ 8]  951 	ld	(hl+), a
+      0003F4 72               [ 8]  952 	ld	(hl), d
+                                    953 ;C:/gbdk/include/gb/metasprites.h:170: __current_base_tile = base_tile;
+      0003F5 21r00r00         [12]  954 	ld	hl, #___current_base_tile
+      0003F8 36 00            [12]  955 	ld	(hl), #0x00
+                                    956 ;C:/gbdk/include/gb/metasprites.h:171: return __move_metasprite_vflip(base_sprite, x - 8, y);
+      0003FA 79               [ 4]  957 	ld	a, c
+      0003FB C6 F8            [ 8]  958 	add	a, #0xf8
+      0003FD C5               [16]  959 	push	bc
+      0003FE 33               [ 8]  960 	inc	sp
+      0003FF 67               [ 4]  961 	ld	h, a
+      000400 2E 00            [ 8]  962 	ld	l, #0x00
+      000402 E5               [16]  963 	push	hl
+      000403 CDr00r00         [24]  964 	call	___move_metasprite_vflip
+      000406 E8 03            [16]  965 	add	sp, #3
+                                    966 ;src\main.c:198: performantdelay(Tomato.speed); // speed variable magic number
+      000408 F8 06            [12]  967 	ldhl	sp,	#6
+      00040A 7E               [ 8]  968 	ld	a, (hl)
+      00040B CDr00r00         [24]  969 	call	_performantdelay
+      00040E 18 75            [12]  970 	jr	00141$
+      000410                        971 00131$:
+                                    972 ;src\main.c:202: Tomato.state = idle;
+      000410 F8 07            [12]  973 	ldhl	sp,	#7
+      000412 36 00            [12]  974 	ld	(hl), #0x00
+                                    975 ;src\main.c:204: break;
+      000414 18 6F            [12]  976 	jr	00141$
+                                    977 ;src\main.c:205: case down:
+      000416                        978 00133$:
+                                    979 ;src\main.c:133: Tomato.goal_y = Tomato.sprite_y - 16;
+      000416 F8 03            [12]  980 	ldhl	sp,	#3
+                                    981 ;src\main.c:206: if(Tomato.sprite_y < Tomato.goal_y)
+      000418 2A               [ 8]  982 	ld	a, (hl+)
+      000419 23               [ 8]  983 	inc	hl
+      00041A 4E               [ 8]  984 	ld	c, (hl)
+      00041B B9               [ 4]  985 	cp	a, c
+      00041C 30 2A            [12]  986 	jr	NC, 00135$
+                                    987 ;src\main.c:208: Tomato.sprite_y++;
+      00041E 2B               [ 8]  988 	dec	hl
+      00041F 2B               [ 8]  989 	dec	hl
+      000420 3C               [ 4]  990 	inc	a
+                                    991 ;src\main.c:209: move_metasprite(player_metasprites[0], 0, 0, Tomato.sprite_x, Tomato.sprite_y);
+      000421 32               [ 8]  992 	ld	(hl-), a
+      000422 47               [ 4]  993 	ld	b, a
+      000423 4E               [ 8]  994 	ld	c, (hl)
+      000424 F8 5A            [12]  995 	ldhl	sp,	#90
+      000426 2A               [ 8]  996 	ld	a, (hl+)
+      000427 66               [ 8]  997 	ld	h, (hl)
+                                    998 ;	spillPairReg hl
+                                    999 ;	spillPairReg hl
+                                   1000 ;	spillPairReg hl
+                                   1001 ;	spillPairReg hl
+                                   1002 ;C:/gbdk/include/gb/metasprites.h:140: __current_metasprite = metasprite;
+      000428 5F               [ 4] 1003 	ld	e, a
+      000429 54               [ 4] 1004 	ld	d, h
+      00042A 21r00r00         [12] 1005 	ld	hl, #___current_metasprite
+      00042D 7B               [ 4] 1006 	ld	a, e
+      00042E 22               [ 8] 1007 	ld	(hl+), a
+      00042F 72               [ 8] 1008 	ld	(hl), d
+                                   1009 ;C:/gbdk/include/gb/metasprites.h:141: __current_base_tile = base_tile;
+      000430 21r00r00         [12] 1010 	ld	hl, #___current_base_tile
+      000433 36 00            [12] 1011 	ld	(hl), #0x00
+                                   1012 ;C:/gbdk/include/gb/metasprites.h:142: return __move_metasprite(base_sprite, x, y);
+      000435 C5               [16] 1013 	push	bc
+      000436 33               [ 8] 1014 	inc	sp
+      000437 61               [ 4] 1015 	ld	h, c
+      000438 2E 00            [ 8] 1016 	ld	l, #0x00
+      00043A E5               [16] 1017 	push	hl
+      00043B CDr00r00         [24] 1018 	call	___move_metasprite
+      00043E E8 03            [16] 1019 	add	sp, #3
+                                   1020 ;src\main.c:210: performantdelay(Tomato.speed);// speed variable magic number
+      000440 F8 06            [12] 1021 	ldhl	sp,	#6
+      000442 7E               [ 8] 1022 	ld	a, (hl)
+      000443 CDr00r00         [24] 1023 	call	_performantdelay
+      000446 18 3D            [12] 1024 	jr	00141$
+      000448                       1025 00135$:
+                                   1026 ;src\main.c:213: Tomato.state = idle;
+      000448 F8 07            [12] 1027 	ldhl	sp,	#7
+      00044A 36 00            [12] 1028 	ld	(hl), #0x00
+                                   1029 ;src\main.c:215: break;
+      00044C 18 37            [12] 1030 	jr	00141$
+                                   1031 ;src\main.c:216: case up:
+      00044E                       1032 00137$:
+                                   1033 ;src\main.c:133: Tomato.goal_y = Tomato.sprite_y - 16;
+      00044E F8 03            [12] 1034 	ldhl	sp,	#3
+                                   1035 ;src\main.c:217: if (Tomato.sprite_y > Tomato.goal_y)
+      000450 2A               [ 8] 1036 	ld	a, (hl+)
+      000451 23               [ 8] 1037 	inc	hl
+      000452 47               [ 4] 1038 	ld	b, a
+      000453 7E               [ 8] 1039 	ld	a, (hl)
+      000454 90               [ 4] 1040 	sub	a, b
+      000455 30 2A            [12] 1041 	jr	NC, 00139$
+                                   1042 ;src\main.c:219: Tomato.sprite_y--;
+      000457 2B               [ 8] 1043 	dec	hl
+      000458 2B               [ 8] 1044 	dec	hl
+      000459 05               [ 4] 1045 	dec	b
+                                   1046 ;src\main.c:220: move_metasprite(player_metasprites[1], 0, 0, Tomato.sprite_x, Tomato.sprite_y);
+      00045A 78               [ 4] 1047 	ld	a, b
+      00045B 32               [ 8] 1048 	ld	(hl-), a
+      00045C 4E               [ 8] 1049 	ld	c, (hl)
+      00045D F8 5C            [12] 1050 	ldhl	sp,	#92
+      00045F 2A               [ 8] 1051 	ld	a, (hl+)
+      000460 66               [ 8] 1052 	ld	h, (hl)
+                                   1053 ;	spillPairReg hl
+                                   1054 ;	spillPairReg hl
+                                   1055 ;	spillPairReg hl
+                                   1056 ;	spillPairReg hl
+                                   1057 ;C:/gbdk/include/gb/metasprites.h:140: __current_metasprite = metasprite;
+      000461 5F               [ 4] 1058 	ld	e, a
+      000462 54               [ 4] 1059 	ld	d, h
+      000463 21r00r00         [12] 1060 	ld	hl, #___current_metasprite
+      000466 7B               [ 4] 1061 	ld	a, e
+      000467 22               [ 8] 1062 	ld	(hl+), a
+      000468 72               [ 8] 1063 	ld	(hl), d
+                                   1064 ;C:/gbdk/include/gb/metasprites.h:141: __current_base_tile = base_tile;
+      000469 21r00r00         [12] 1065 	ld	hl, #___current_base_tile
+      00046C 36 00            [12] 1066 	ld	(hl), #0x00
+                                   1067 ;C:/gbdk/include/gb/metasprites.h:142: return __move_metasprite(base_sprite, x, y);
+      00046E C5               [16] 1068 	push	bc
+      00046F 33               [ 8] 1069 	inc	sp
+      000470 61               [ 4] 1070 	ld	h, c
+      000471 2E 00            [ 8] 1071 	ld	l, #0x00
+      000473 E5               [16] 1072 	push	hl
+      000474 CDr00r00         [24] 1073 	call	___move_metasprite
+      000477 E8 03            [16] 1074 	add	sp, #3
+                                   1075 ;src\main.c:221: performantdelay(Tomato.speed); // speed variable magic number
+      000479 F8 06            [12] 1076 	ldhl	sp,	#6
+      00047B 7E               [ 8] 1077 	ld	a, (hl)
+      00047C CDr00r00         [24] 1078 	call	_performantdelay
+      00047F 18 04            [12] 1079 	jr	00141$
+      000481                       1080 00139$:
+                                   1081 ;src\main.c:224: Tomato.state = idle;
+      000481 F8 07            [12] 1082 	ldhl	sp,	#7
+      000483 36 00            [12] 1083 	ld	(hl), #0x00
+                                   1084 ;src\main.c:227: }
+      000485                       1085 00141$:
+                                   1086 ;src\main.c:229: wait_vbl_done();
+      000485 CDr00r00         [24] 1087 	call	_wait_vbl_done
+      000488 C3r38r02         [16] 1088 	jp	00143$
+                                   1089 ;src\main.c:231: }
+      00048B E8 64            [16] 1090 	add	sp, #100
+      00048D C9               [16] 1091 	ret
+                                   1092 	.area _CODE
+                                   1093 	.area _INITIALIZER
+                                   1094 	.area _CABS (ABS)

@@ -14,19 +14,17 @@ Symbol Table
     ___current_base_tile                                           ****** GX
     ___current_metasprite                                          ****** GX
     ___move_metasprite                                             ****** GX
-    ___move_metasprite_hvflip                                      ****** GX
-  0 ___str_0                                                       0000E5 R
-  0 ___str_2                                                       0000E9 R
+    ___move_metasprite_vflip                                       ****** GX
+  0 ___str_0                                                       0000CF R
+  0 ___str_2                                                       0000D3 R
   0 _check_map                                                     00000C GR
-  0 _init_gfx                                                      0000EB GR
+  0 _init_gfx                                                      0000D5 GR
   1 _joy                                                           000000 GR
     _joypad                                                        ****** GX
-  0 _main                                                          000122 GR
-  0 _map_collision                                                 000036 GR
+  0 _main                                                          00010C GR
+  0 _map_collision                                                 000020 GR
   0 _performantdelay                                               000000 GR
-  0 _player_down                                                   000020 GR
-  0 _player_metasprites                                            000034 GR
-  0 _printMap                                                      0000A4 GR
+  0 _printMap                                                      00008E GR
     _printf                                                        ****** GX
     _puts                                                          ****** GX
     _set_bkg_data                                                  ****** GX
@@ -34,12 +32,13 @@ Symbol Table
     _set_sprite_data                                               ****** GX
     _wait_vbl_done                                                 ****** GX
 
+
 ASxxxx Assembler V02.00 + NoICE + SDCC mods  (GameBoy)                  Page 2
 Hexadecimal [24-Bits]
 
 Area Table
 
-   0 _CODE                                      size    317   flags    0
+   0 _CODE                                      size    48E   flags    0
    1 _DATA                                      size      1   flags    0
    2 _INITIALIZED                               size      0   flags    0
    3 _DABS                                      size      0   flags    8

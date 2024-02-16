@@ -5,6 +5,7 @@
 #include "../res/Test_Map.h"
 #include "../res/PT_Tiles.h"
 #include "../res/PT_PlaceHolder_Cast.h"
+#include "../src/player.h"
 
 void performantdelay(uint8_t numloops)
 {
@@ -16,16 +17,6 @@ void performantdelay(uint8_t numloops)
 }
 
 uint8_t joy;
-const metasprite_t player_down[] = {
-    {.dy = -8, .dx = -8, .dtile = 0, .props = 0},
-    {.dy = 0, .dx = 8, .dtile = 2, .props = 0},
-    {.dy = 8, .dx = -8, .dtile = 1, .props = 0},
-    {.dy = 0, .dx = 8, .dtile = 3, .props = 0},
-    METASPR_TERM
-};
-const metasprite_t* const player_metasprites[1] = {
-    player_down
-};
 
 const unsigned char map_collision[10][11] = {
     {'1', '1', '1', '1', '1', '1', '1', '1', '1', '1'},
@@ -68,18 +59,59 @@ void init_gfx() {
     SHOW_SPRITES;
 }
 
-enum player_state {idle, left, right, up, down};
-
 void main(void)
 {
-    // PLAYER VARIABLES
-    uint8_t local_x = 4; // LOCAL LOCATION ON MAP
-    uint8_t local_y = 4;
-    uint8_t sprite_x = 80; // SPRITE LOCATION ON SCREEN
-    uint8_t sprite_y = 88;
-    uint8_t goal_x, goal_y; // TARGET LOCATION ON SCREEN
-    uint8_t speed = 5;
-    enum player_state state = idle;
+    struct player Tomato =
+    {
+        /* data */
+        // PLAYER VARIABLES
+        4, // LOCAL LOCATION ON MAP
+        4,
+        80, // SPRITE LOCATION ON SCREEN
+        88,
+        0,
+        0, // TARGET LOCATION ON SCREEN
+        3, // SPEED
+        idle,
+        // Input System
+        0,
+        0,
+    };
+    // INITALIZE PLAYER GRAPHICS
+    const metasprite_t player_down[] = {
+        {.dy = -8, .dx = -8, .dtile = 0, .props = 0},
+        {.dy = 0, .dx = 8, .dtile = 2, .props = 0},
+        {.dy = 8, .dx = -8, .dtile = 1, .props = 0},
+        {.dy = 0, .dx = 8, .dtile = 3, .props = 0},
+        METASPR_TERM
+    };
+    const metasprite_t player_up[] = {
+        {.dy = -8, .dx = -8, .dtile = 4, .props = 0},
+        {.dy = 0, .dx = 8, .dtile = 6, .props = 0},
+        {.dy = 8, .dx = -8, .dtile = 5, .props = 0},
+        {.dy = 0, .dx = 8, .dtile = 7, .props = 0},
+        METASPR_TERM
+
+    };
+    const metasprite_t player_right_0[] = {
+        {.dy = -8, .dx = -8, .dtile = 8, .props = 0},
+        {.dy = 0, .dx = 8, .dtile = 10, .props = 0},
+        {.dy = 8, .dx = -8, .dtile = 9, .props = 0},
+        {.dy = 0, .dx = 8, .dtile = 11, .props = 0},
+        METASPR_TERM
+    };
+    const metasprite_t player_right_1[] = {
+        {.dy = -8, .dx = -8, .dtile = 12, .props = 0},
+        {.dy = 0, .dx = 8, .dtile = 14, .props = 0},
+        {.dy = 8, .dx = -8, .dtile = 13, .props = 0},
+        {.dy = 0, .dx = 8, .dtile = 15, .props = 0},
+        METASPR_TERM
+    };
+
+    const metasprite_t* const player_metasprites[4] = {
+        player_down, player_up, player_right_0, player_right_1
+    };
+
 	init_gfx();
     volatile uint8_t timer = 0;
     move_metasprite(player_metasprites[0], 0, 0, 80, 88);
@@ -88,104 +120,110 @@ void main(void)
     while(1) {
         joy = joypad();
         timer++;
-        if (state == idle)
-        {
-            // Game main loop processing goes here
-            if (joy & J_UP)
-            {
-                if (check_map(local_x, local_y - 1) == '0')
+        
+        switch (Tomato.state) 
+        {      
+            case idle:
+                // Game main loop processing goes here
+                if (joy & J_UP)
                 {
-                    local_y -= 1;
-                    goal_y = sprite_y - 16;
-                    state = up;
-                    //move_metasprite(player_metasprites[0], 0, 0, sprite_x, sprite_y);
-                    //performantdelay(30);
+                    if (check_map(Tomato.local_x, Tomato.local_y - 1) == '0')
+                    {
+                        Tomato.local_y -= 1;
+                        Tomato.goal_y = Tomato.sprite_y - 16;
+                        Tomato.state = up;
+                    }
+                    else
+                    {
+                        move_metasprite(player_metasprites[1], 0, 0, Tomato.sprite_x, Tomato.sprite_y);
+                    }
                 }
-            }
-            else if (joy & J_DOWN)
-            {
-                if (check_map(local_x, local_y + 1) == '0')
+                else if (joy & J_DOWN)
                 {
-                    local_y += 1;
-                    goal_y = sprite_y + 16;
-                    state = down;
-                    //move_metasprite(player_metasprites[0], 0, 0, sprite_x, sprite_y);
-                    //performantdelay(30);
+                    if (check_map(Tomato.local_x, Tomato.local_y + 1) == '0')
+                    {
+                        Tomato.local_y += 1;
+                        Tomato.goal_y = Tomato.sprite_y + 16;
+                        Tomato.state = down;
+                    }
+                    else 
+                    {
+                        move_metasprite(player_metasprites[0], 0, 0, Tomato.sprite_x, Tomato.sprite_y);
+                    }
                 }
-            }
-            else if (joy & J_LEFT)
-            {
-                if (check_map(local_x - 1, local_y) == '0')
+                else if (joy & J_LEFT)
                 {
-                    local_x -= 1;
-                    goal_x = sprite_x - 16;
-                    state = left;
-                    //move_metasprite(player_metasprites[0], 0, 0, sprite_x, sprite_y);
-                    //performantdelay(30);
+                    if (check_map(Tomato.local_x - 1, Tomato.local_y) == '0')
+                    {
+                        Tomato.local_x -= 1;
+                        Tomato.goal_x = Tomato.sprite_x - 16;
+                        Tomato.state = left;
+                    }
+                    else 
+                    {
+                        move_metasprite_vflip(player_metasprites[3], 0, 0, Tomato.sprite_x, Tomato.sprite_y);
+                    }
                 }
-            }
-            else if (joy  & J_RIGHT)
-            {
-                if (check_map(local_x + 1, local_y) == '0')
+                else if (joy  & J_RIGHT)
                 {
-                    local_x += 1;
-                    goal_x = sprite_x + 16;
-                    state = right;
-                    //move_metasprite(player_metasprites[0], 0, 0, sprite_x, sprite_y);
-                    //performantdelay(30);
+                    if (check_map(Tomato.local_x + 1, Tomato.local_y) == '0')
+                    {
+                        Tomato.local_x += 1;
+                        Tomato.goal_x = Tomato.sprite_x + 16;
+                        Tomato.state = right;
+                    }
+                    else 
+                    {
+                        move_metasprite(player_metasprites[2], 0, 0, Tomato.sprite_x, Tomato.sprite_y);
+                    }
                 }
-            }
-        }
-        // NOTE TO SELF, THIS MIGHT JUST BE TWO SWITCH STATEMENTS, BETTER OFF USING THE SWITCH KEYWORD & HAVE C CONVERT IT TO MACHINE CODE.
-        else if (state == right) // switch(state)
-        {                        //     case (state = right):
-            if (sprite_x < goal_x)
-            {
-                sprite_x++;
-                move_metasprite(player_metasprites[0], 0, 0, sprite_x, sprite_y);
-                performantdelay(speed); // speed variable magic number
-            }
-            else 
-            {
-                state = idle;
-            }
-        }
-        else if (state == left)
-        {
-            if (sprite_x > goal_x)
-            {
-                sprite_x--;
-                move_metasprite(player_metasprites[0], 0, 0, sprite_x, sprite_y);
-                performantdelay(speed); // speed variable magic number
-            }
-            else 
-            {
-                state = idle;
-            }
-        }
-        else if (state == down)
-        {
-            if(sprite_y < goal_y)
-            {
-                sprite_y++;
-                move_metasprite_hvflip(player_metasprites[0], 0, 0, sprite_x, sprite_y);
-                performantdelay(speed);// speed variable magic number
-            }
-            else {
-                state = idle;
-            }
-        }
-        else if (state == up)
-        {
-            if (sprite_y > goal_y)
-            {
-                sprite_y--;
-                move_metasprite(player_metasprites[0], 0, 0, sprite_x, sprite_y);
-                performantdelay(speed); // speed variable magic number
-            }
-            else {
-                state = idle;
-            }
+                break;
+            case right:
+                if (Tomato.sprite_x < Tomato.goal_x)
+                {
+                    Tomato.sprite_x++;
+                    move_metasprite(player_metasprites[2], 0, 0, Tomato.sprite_x, Tomato.sprite_y);
+                    performantdelay(Tomato.speed); // speed variable magic number
+                }
+                else 
+                {
+                    Tomato.state = idle;
+                }
+                break;
+            case left:
+                if (Tomato.sprite_x > Tomato.goal_x)
+                {
+                    Tomato.sprite_x--;
+                    move_metasprite_vflip(player_metasprites[3], 0, 0, Tomato.sprite_x, Tomato.sprite_y);
+                    performantdelay(Tomato.speed); // speed variable magic number
+                }
+                else 
+                {
+                    Tomato.state = idle;
+                }
+                break;
+            case down:
+                if(Tomato.sprite_y < Tomato.goal_y)
+                {
+                    Tomato.sprite_y++;
+                    move_metasprite(player_metasprites[0], 0, 0, Tomato.sprite_x, Tomato.sprite_y);
+                    performantdelay(Tomato.speed);// speed variable magic number
+                }
+                else {
+                    Tomato.state = idle;
+                }
+                break;
+            case up:
+                if (Tomato.sprite_y > Tomato.goal_y)
+                {
+                    Tomato.sprite_y--;
+                    move_metasprite(player_metasprites[1], 0, 0, Tomato.sprite_x, Tomato.sprite_y);
+                    performantdelay(Tomato.speed); // speed variable magic number
+                }
+                else {
+                    Tomato.state = idle;
+                }
+                break;
         }
 		// Done processing, yield CPU and wait for start of next frame
         wait_vbl_done();
